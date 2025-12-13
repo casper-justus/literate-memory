@@ -2,7 +2,7 @@
   "name": "react-native-expo-app",
   "version": "1.0.0",
   "main": "index.ts",
-  "description": "A cross-platform mobile application built with React Native and Expo",
+  "description": "A cross-platform mobile music player with YouTube integration, built with React Native and Expo",
   "scripts": {
     "start": "expo start",
     "android": "expo start --android",
@@ -15,10 +15,14 @@
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "^2.2.0",
+    "@react-native-community/slider": "^5.1.1",
     "@react-navigation/bottom-tabs": "^7.8.12",
     "@react-navigation/native": "^7.1.25",
     "@react-navigation/stack": "^7.6.12",
+    "axios": "^1.13.2",
     "expo": "~54.0.29",
+    "expo-av": "^16.0.8",
+    "expo-file-system": "^19.0.21",
     "expo-status-bar": "~3.0.9",
     "react": "19.1.0",
     "react-native": "0.81.5",
