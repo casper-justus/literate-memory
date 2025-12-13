@@ -1,0 +1,15 @@
+npm warn Unknown env config "python". This will stop working in the next major version of npm.
+
+> music-player-backend@1.0.0 start
+> node src/index.js
+
+
+🎵 Music Player API Server
+🚀 Server running on http://localhost:3000
+📡 API endpoints available at http://localhost:3000/api/music
+
+Press Ctrl+C to stop
+
+2025-12-13T11:44:29.828Z - GET /api/music/health
+2025-12-13T11:44:41.826Z - GET /api/music/search
+2025-12-13T11:44:56.566Z - GET /
