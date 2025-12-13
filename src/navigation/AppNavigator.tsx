@@ -12,6 +12,7 @@ import SearchScreen from '../screens/SearchScreen';
 import PlaylistsScreen from '../screens/PlaylistsScreen';
 import PlaylistDetailsScreen from '../screens/PlaylistDetailsScreen';
 import NowPlayingScreen from '../screens/NowPlayingScreen';
+import SettingsScreen from '../screens/SettingsScreen';
 import MiniPlayer from '../components/MiniPlayer';
 import { MusicPlayerProvider } from '../context/MusicPlayerContext';
 
@@ -76,11 +77,11 @@ function TabNavigator() {
           }}
         />
         <Tab.Screen 
-          name="Profile" 
-          component={ProfileScreen}
+          name="Settings" 
+          component={SettingsScreen}
           options={{ 
-            title: 'Profile',
-            tabBarIcon: ({ color }) => <span style={{ fontSize: 24 }}>👤</span>,
+            title: 'Settings',
+            tabBarIcon: ({ color }) => <span style={{ fontSize: 24 }}>⚙️</span>,
           }}
         />
       </Tab.Navigator>

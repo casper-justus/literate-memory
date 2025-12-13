@@ -9,6 +9,7 @@ export type RootStackParamList = {
   Playlists: undefined;
   PlaylistDetails: { playlistId: string };
   NowPlaying: undefined;
+  Settings: undefined;
 };
 
 export type BottomTabParamList = {
@@ -16,5 +17,5 @@ export type BottomTabParamList = {
   MusicPlayer: undefined;
   Search: undefined;
   Playlists: undefined;
-  Profile: undefined;
+  Settings: undefined;
 };
