@@ -1,0 +1,193 @@
+╔════════════════════════════════════════════════════════════════╗
+║                                                                ║
+║         📦 UBUNTU INSTALLATION COMMANDS - QUICK GUIDE         ║
+║                                                                ║
+╠════════════════════════════════════════════════════════════════╣
+║                                                                ║
+║   🔄 SYSTEM UPDATE                                            ║
+║                                                                ║
+║   sudo apt update && sudo apt upgrade -y                       ║
+║                                                                ║
+╠════════════════════════════════════════════════════════════════╣
+║                                                                ║
+║   📦 NODE.JS & NPM (Required)                                 ║
+║                                                                ║
+║   curl -fsSL https://deb.nodesource.com/setup_20.x | \        ║
+║     sudo -E bash -                                             ║
+║   sudo apt install -y nodejs                                   ║
+║                                                                ║
+║   Verify: node --version && npm --version                      ║
+║                                                                ║
+╠════════════════════════════════════════════════════════════════╣
+║                                                                ║
+║   🐍 PYTHON3 & PIP3 (Required)                                ║
+║                                                                ║
+║   sudo apt install -y python3 python3-pip                      ║
+║                                                                ║
+║   Verify: python3 --version && pip3 --version                  ║
+║                                                                ║
+╠════════════════════════════════════════════════════════════════╣
+║                                                                ║
+║   📹 YT-DLP (Required for Backend)                            ║
+║                                                                ║
+║   pip3 install -U yt-dlp                                       ║
+║   echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc    ║
+║   source ~/.bashrc                                             ║
+║                                                                ║
+║   Verify: yt-dlp --version                                     ║
+║                                                                ║
+╠════════════════════════════════════════════════════════════════╣
+║                                                                ║
+║   🔨 BUILD TOOLS (Required)                                   ║
+║                                                                ║
+║   sudo apt install -y build-essential git curl                 ║
+║                                                                ║
+║   Verify: gcc --version && make --version                      ║
+║                                                                ║
+╠════════════════════════════════════════════════════════════════╣
+║                                                                ║
+║   🚀 EXPO CLI (Required for React Native)                     ║
+║                                                                ║
+║   npm install -g @expo/cli                                     ║
+║                                                                ║
+║   Verify: expo --version                                       ║
+║                                                                ║
+╠════════════════════════════════════════════════════════════════╣
+║                                                                ║
+║   📦 PROJECT DEPENDENCIES                                     ║
+║                                                                ║
+║   # Frontend (in project root)                                 ║
+║   cd /home/engine/project                                      ║
+║   npm install                                                  ║
+║                                                                ║
+║   # Backend                                                    ║
+║   cd backend                                                   ║
+║   npm install                                                  ║
+║   cd ..                                                        ║
+║                                                                ║
+╠════════════════════════════════════════════════════════════════╣
+║                                                                ║
+║   🌐 LOCALTUNNEL (Optional - For Public URL)                  ║
+║                                                                ║
+║   npm install -g localtunnel                                   ║
+║                                                                ║
+║   Verify: lt --version                                         ║
+║                                                                ║
+╠════════════════════════════════════════════════════════════════╣
+║                                                                ║
+║   🎬 FFMPEG (Optional - For Media)                            ║
+║                                                                ║
+║   sudo apt install -y ffmpeg                                   ║
+║                                                                ║
+║   Verify: ffmpeg -version                                      ║
+║                                                                ║
+╠════════════════════════════════════════════════════════════════╣
+║                                                                ║
+║   ✅ VERIFICATION COMMANDS                                    ║
+║                                                                ║
+║   node --version       # Should show v20.x or higher           ║
+║   npm --version        # Should show v10.x or higher           ║
+║   python3 --version    # Should show v3.8 or higher            ║
+║   pip3 --version       # Should show latest                    ║
+║   yt-dlp --version     # Should show 2024+ version             ║
+║   expo --version       # Should show latest                    ║
+║   git --version        # Should show v2.x                      ║
+║                                                                ║
+╠════════════════════════════════════════════════════════════════╣
+║                                                                ║
+║   🚀 START BACKEND SERVER                                     ║
+║                                                                ║
+║   cd backend                                                   ║
+║   npm start                                                    ║
+║                                                                ║
+║   Test: curl http://localhost:3000/api/music/health           ║
+║                                                                ║
+╠════════════════════════════════════════════════════════════════╣
+║                                                                ║
+║   📱 START FRONTEND APP                                       ║
+║                                                                ║
+║   # In project root (new terminal)                             ║
+║   npm start                                                    ║
+║                                                                ║
+║   # Or directly on Android                                     ║
+║   npm run android                                              ║
+║                                                                ║
+╠════════════════════════════════════════════════════════════════╣
+║                                                                ║
+║   🌐 CREATE PUBLIC TUNNEL                                     ║
+║                                                                ║
+║   lt --port 3000                                               ║
+║                                                                ║
+║   Note the URL and use in React Native app settings            ║
+║                                                                ║
+╠════════════════════════════════════════════════════════════════╣
+║                                                                ║
+║   🔧 TROUBLESHOOTING                                          ║
+║                                                                ║
+║   Command not found after install:                             ║
+║   → source ~/.bashrc                                           ║
+║                                                                ║
+║   Permission errors:                                           ║
+║   → Don't use sudo with npm install in project                 ║
+║                                                                ║
+║   yt-dlp not found:                                            ║
+║   → export PATH="$HOME/.local/bin:$PATH"                       ║
+║   → source ~/.bashrc                                           ║
+║                                                                ║
+║   Port 3000 in use:                                            ║
+║   → sudo lsof -i :3000                                         ║
+║   → kill -9 <PID>                                              ║
+║                                                                ║
+╠════════════════════════════════════════════════════════════════╣
+║                                                                ║
+║   📚 ONE-LINE INSTALL (All Essential Tools)                   ║
+║                                                                ║
+║   sudo apt update && sudo apt install -y curl git \           ║
+║     build-essential python3 python3-pip && \                   ║
+║   curl -fsSL https://deb.nodesource.com/setup_20.x | \        ║
+║     sudo -E bash - && \                                        ║
+║   sudo apt install -y nodejs && \                              ║
+║   pip3 install -U yt-dlp && \                                  ║
+║   npm install -g @expo/cli localtunnel && \                    ║
+║   echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc && \║
+║   source ~/.bashrc                                             ║
+║                                                                ║
+╠════════════════════════════════════════════════════════════════╣
+║                                                                ║
+║   📋 INSTALLATION ORDER                                       ║
+║                                                                ║
+║   1. Update system                                             ║
+║   2. Install Node.js & npm                                     ║
+║   3. Install Python3 & pip3                                    ║
+║   4. Install yt-dlp                                            ║
+║   5. Install build tools                                       ║
+║   6. Install Expo CLI                                          ║
+║   7. Install project dependencies                              ║
+║   8. Install optional tools (LocalTunnel, FFmpeg)              ║
+║   9. Verify all installations                                  ║
+║   10. Start backend & frontend                                 ║
+║                                                                ║
+╠════════════════════════════════════════════════════════════════╣
+║                                                                ║
+║   🎯 AFTER INSTALLATION                                       ║
+║                                                                ║
+║   1. Run verification: node --version                          ║
+║   2. Install dependencies: npm install                         ║
+║   3. Start backend: cd backend && npm start                    ║
+║   4. Start frontend: npm start                                 ║
+║   5. Configure app settings with backend URL                   ║
+║                                                                ║
+╠════════════════════════════════════════════════════════════════╣
+║                                                                ║
+║   📖 DOCUMENTATION                                            ║
+║                                                                ║
+║   • UBUNTU_INSTALLATION.md  - Complete guide                   ║
+║   • QUICK_START.md          - Quick start                      ║
+║   • SETUP_GUIDE.md          - Detailed setup                   ║
+║   • README.md               - Project overview                 ║
+║                                                                ║
+╚════════════════════════════════════════════════════════════════╝
+
+🎉 Installation commands ready!
+📚 See UBUNTU_INSTALLATION.md for detailed instructions
+🚀 Run commands in order for best results
