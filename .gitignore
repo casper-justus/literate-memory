@@ -31,7 +31,10 @@ yarn-error.*
 *.pem
 
 # local env files
+.env
+.env.local
 .env*.local
+.env.production
 
 # typescript
 *.tsbuildinfo
@@ -39,3 +42,14 @@ yarn-error.*
 # generated native folders
 /ios
 /android
+
+# Production
+/backend/cache/
+/backend/downloads/
+/logs/
+*.log
+*.pid
+ngrok_url.txt
+
+# Docker
+.dockerignore
