@@ -11,7 +11,9 @@ import MusicPlayerScreen from '../screens/MusicPlayerScreen';
 import SearchScreen from '../screens/SearchScreen';
 import PlaylistsScreen from '../screens/PlaylistsScreen';
 import PlaylistDetailsScreen from '../screens/PlaylistDetailsScreen';
+import YouTubePlaylistScreen from '../screens/YouTubePlaylistScreen';
 import NowPlayingScreen from '../screens/NowPlayingScreen';
+import LyricsScreen from '../screens/LyricsScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import MiniPlayer from '../components/MiniPlayer';
 import { MusicPlayerProvider } from '../context/MusicPlayerContext';
@@ -130,11 +132,24 @@ export default function AppNavigator() {
             component={PlaylistDetailsScreen}
             options={{ title: 'Playlist' }}
           />
+          <Stack.Screen
+            name="YouTubePlaylist"
+            component={YouTubePlaylistScreen}
+            options={{ title: 'YouTube Playlist' }}
+          />
           <Stack.Screen 
             name="NowPlaying" 
             component={NowPlayingScreen}
             options={{ 
               title: 'Now Playing',
+              presentation: 'modal',
+            }}
+          />
+          <Stack.Screen
+            name="Lyrics"
+            component={LyricsScreen}
+            options={{
+              title: 'Lyrics',
               presentation: 'modal',
             }}
           />

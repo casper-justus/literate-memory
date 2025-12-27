@@ -23,9 +23,9 @@ export default function PlaylistDetailsScreen() {
   
   const {
     playlists,
-    playTrack,
     removeTrackFromPlaylist,
     playPlaylist,
+    playQueue,
   } = useMusicPlayer();
 
   const playlist = playlists.find((p) => p.id === playlistId);
@@ -38,8 +38,8 @@ export default function PlaylistDetailsScreen() {
     );
   }
 
-  const handlePlayTrack = (track: Track) => {
-    playTrack(track);
+  const handlePlayTrack = async (index: number) => {
+    await playQueue(playlist.tracks, index, playlist);
   };
 
   const handleRemoveTrack = (trackId: string, trackTitle: string) => {
@@ -65,21 +65,23 @@ export default function PlaylistDetailsScreen() {
     playPlaylist(playlist);
   };
 
+  const openTrackMenu = (track: Track, index: number) => {
+    Alert.alert(track.title, 'Choose action', [
+      { text: 'Play', onPress: () => handlePlayTrack(index) },
+      {
+        text: 'Remove from Playlist',
+        onPress: () => handleRemoveTrack(track.id, track.title),
+        style: 'destructive',
+      },
+      { text: 'Cancel', style: 'cancel' },
+    ]);
+  };
+
   const renderTrackItem = ({ item, index }: { item: Track; index: number }) => (
     <TouchableOpacity
       style={styles.trackItem}
-      onPress={() => handlePlayTrack(item)}
-      onLongPress={() => {
-        Alert.alert(
-          item.title,
-          'Choose action',
-          [
-            { text: 'Play', onPress: () => handlePlayTrack(item) },
-            { text: 'Remove from Playlist', onPress: () => handleRemoveTrack(item.id, item.title), style: 'destructive' },
-            { text: 'Cancel', style: 'cancel' },
-          ]
-        );
-      }}
+      onPress={() => handlePlayTrack(index)}
+      activeOpacity={0.85}
     >
       <Text style={styles.trackNumber}>{index + 1}</Text>
       {item.thumbnail && (
@@ -93,6 +95,16 @@ export default function PlaylistDetailsScreen() {
           {item.artist}
         </Text>
       </View>
+      <TouchableOpacity
+        onPress={(e) => {
+          e.stopPropagation();
+          openTrackMenu(item, index);
+        }}
+        style={styles.menuButton}
+        hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+      >
+        <Ionicons name="ellipsis-vertical" size={18} color="#FFFFFF" />
+      </TouchableOpacity>
     </TouchableOpacity>
   );
 
@@ -211,6 +223,12 @@ const styles = StyleSheet.create({
   trackArtist: {
     color: '#AAAAAA',
     fontSize: 12,
+  },
+  menuButton: {
+    width: 44,
+    height: 44,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   emptyContainer: {
     flex: 1,

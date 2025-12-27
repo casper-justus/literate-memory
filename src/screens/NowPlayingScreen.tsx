@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -6,14 +6,24 @@ import {
   Image,
   TouchableOpacity,
   Dimensions,
+  Alert,
+  ImageBackground,
 } from 'react-native';
 import Slider from '@react-native-community/slider';
 import { Ionicons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { RootStackParamList } from '../types/navigation';
 import { useMusicPlayer } from '../context/MusicPlayerContext';
+import { Track } from '../types/music';
 
 const { width } = Dimensions.get('window');
 
+type NavigationProp = StackNavigationProp<RootStackParamList>;
+
 export default function NowPlayingScreen() {
+  const navigation = useNavigation<NavigationProp>();
+
   const {
     playerState,
     pauseTrack,
@@ -23,9 +33,13 @@ export default function NowPlayingScreen() {
     seekTo,
     setRepeatMode,
     toggleShuffle,
+    addToQueue,
+    playlists,
+    addTrackToPlaylist,
   } = useMusicPlayer();
 
-  const { currentTrack, isPlaying, position, duration, repeatMode, shuffleMode } = playerState;
+  const { currentTrack, isPlaying, position, duration, repeatMode, shuffleMode } =
+    playerState;
 
   const [sliderValue, setSliderValue] = useState(0);
   const [isSeeking, setIsSeeking] = useState(false);
@@ -70,6 +84,43 @@ export default function NowPlayingScreen() {
     setRepeatMode(modes[nextIndex]);
   };
 
+  const openAddToPlaylist = (track: Track) => {
+    if (playlists.length === 0) {
+      Alert.alert('No Playlists', 'Create a playlist first to add tracks.');
+      return;
+    }
+
+    const buttons = playlists.map((playlist) => ({
+      text: playlist.name,
+      onPress: () => {
+        addTrackToPlaylist(playlist.id, track);
+        Alert.alert('Success', `Added to ${playlist.name}`);
+      },
+    }));
+
+    buttons.push({ text: 'Cancel', onPress: () => {} });
+
+    Alert.alert('Add to Playlist', 'Select a playlist', buttons);
+  };
+
+  const openOptions = (track: Track) => {
+    Alert.alert('Options', undefined, [
+      {
+        text: 'View Lyrics',
+        onPress: () => navigation.navigate('Lyrics', { track }),
+      },
+      {
+        text: 'Add to Queue',
+        onPress: () => addToQueue(track),
+      },
+      {
+        text: 'Add to Playlist',
+        onPress: () => openAddToPlaylist(track),
+      },
+      { text: 'Cancel', style: 'cancel' },
+    ]);
+  };
+
   if (!currentTrack) {
     return (
       <View style={styles.emptyContainer}>
@@ -78,14 +129,25 @@ export default function NowPlayingScreen() {
     );
   }
 
-  return (
-    <View style={styles.container}>
+  const backgroundSource = currentTrack.thumbnail
+    ? { uri: currentTrack.thumbnail }
+    : undefined;
+
+  const content = (
+    <View style={styles.content}>
+      <View style={styles.topBar}>
+        <TouchableOpacity
+          onPress={() => openOptions(currentTrack)}
+          style={styles.topBarButton}
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+        >
+          <Ionicons name="ellipsis-vertical" size={24} color="#FFFFFF" />
+        </TouchableOpacity>
+      </View>
+
       <View style={styles.artworkContainer}>
         {currentTrack.thumbnail ? (
-          <Image
-            source={{ uri: currentTrack.thumbnail }}
-            style={styles.artwork}
-          />
+          <Image source={{ uri: currentTrack.thumbnail }} style={styles.artwork} />
         ) : (
           <View style={[styles.artwork, styles.placeholderArtwork]}>
             <Ionicons name="musical-notes" size={80} color="#666666" />
@@ -122,10 +184,7 @@ export default function NowPlayingScreen() {
       </View>
 
       <View style={styles.controlsContainer}>
-        <TouchableOpacity
-          style={styles.controlButton}
-          onPress={toggleShuffle}
-        >
+        <TouchableOpacity style={styles.controlButton} onPress={toggleShuffle}>
           <Ionicons
             name="shuffle"
             size={28}
@@ -133,10 +192,7 @@ export default function NowPlayingScreen() {
           />
         </TouchableOpacity>
 
-        <TouchableOpacity
-          style={styles.controlButton}
-          onPress={previousTrack}
-        >
+        <TouchableOpacity style={styles.controlButton} onPress={previousTrack}>
           <Ionicons name="play-skip-back" size={32} color="#FFFFFF" />
         </TouchableOpacity>
 
@@ -151,17 +207,11 @@ export default function NowPlayingScreen() {
           />
         </TouchableOpacity>
 
-        <TouchableOpacity
-          style={styles.controlButton}
-          onPress={nextTrack}
-        >
+        <TouchableOpacity style={styles.controlButton} onPress={nextTrack}>
           <Ionicons name="play-skip-forward" size={32} color="#FFFFFF" />
         </TouchableOpacity>
 
-        <TouchableOpacity
-          style={styles.controlButton}
-          onPress={cycleRepeatMode}
-        >
+        <TouchableOpacity style={styles.controlButton} onPress={cycleRepeatMode}>
           <Ionicons
             name={getRepeatIcon()}
             size={28}
@@ -171,12 +221,35 @@ export default function NowPlayingScreen() {
       </View>
     </View>
   );
+
+  if (!backgroundSource) {
+    return <View style={styles.container}>{content}</View>;
+  }
+
+  return (
+    <ImageBackground
+      source={backgroundSource}
+      style={styles.container}
+      blurRadius={25}
+      resizeMode="cover"
+    >
+      <View style={styles.overlay} />
+      {content}
+    </ImageBackground>
+  );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#000000',
+  },
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0,0,0,0.65)',
+  },
+  content: {
+    flex: 1,
     padding: 20,
   },
   emptyContainer: {
@@ -189,10 +262,22 @@ const styles = StyleSheet.create({
     color: '#AAAAAA',
     fontSize: 18,
   },
+  topBar: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    height: 44,
+  },
+  topBarButton: {
+    width: 44,
+    height: 44,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   artworkContainer: {
     alignItems: 'center',
-    marginTop: 40,
-    marginBottom: 40,
+    marginTop: 10,
+    marginBottom: 30,
   },
   artwork: {
     width: width - 80,
@@ -206,7 +291,7 @@ const styles = StyleSheet.create({
   },
   infoContainer: {
     alignItems: 'center',
-    marginBottom: 40,
+    marginBottom: 30,
   },
   title: {
     color: '#FFFFFF',
@@ -220,7 +305,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   sliderContainer: {
-    marginBottom: 40,
+    marginBottom: 30,
   },
   slider: {
     width: '100%',

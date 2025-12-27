@@ -1,6 +1,13 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
 import { AVPlaybackStatus } from 'expo-av';
-import { Track, PlayerState, Playlist, SearchResult } from '../types/music';
+import {
+  Track,
+  PlayerState,
+  Playlist,
+  SearchResult,
+  YouTubePlaylist,
+  YouTubePlaylistSearchResult,
+} from '../types/music';
 import AudioPlayerService from '../services/AudioPlayerService';
 import YouTubeService from '../services/YouTubeService';
 import BackendMusicService, { BackendMusicService as BackendMusicServiceClass } from '../services/BackendMusicService';
@@ -29,7 +36,10 @@ interface MusicPlayerContextType {
   removeTrackFromPlaylist: (playlistId: string, trackId: string) => void;
   deletePlaylist: (playlistId: string) => void;
   playPlaylist: (playlist: Playlist) => Promise<void>;
+  playQueue: (tracks: Track[], startIndex?: number, playlist?: Playlist | null) => Promise<void>;
   searchMusic: (query: string) => Promise<SearchResult[]>;
+  searchYouTubePlaylists: (query: string) => Promise<YouTubePlaylistSearchResult[]>;
+  getYouTubePlaylist: (playlistId: string) => Promise<YouTubePlaylist | null>;
   getTrendingMusic: () => Promise<SearchResult[]>;
   getAudioUrl: (videoId: string) => Promise<string | null>;
 }
@@ -271,6 +281,35 @@ export function MusicPlayerProvider({ children }: { children: ReactNode }) {
     await playTrack(playlist.tracks[0]);
   }, [playTrack]);
 
+  const playQueue = useCallback(
+    async (tracks: Track[], startIndex: number = 0, playlist: Playlist | null = null) => {
+      if (tracks.length === 0) return;
+      if (startIndex < 0 || startIndex >= tracks.length) return;
+
+      setCurrentPlaylist(playlist);
+      setPlayerState((prev) => ({
+        ...prev,
+        queue: tracks,
+        currentIndex: startIndex,
+      }));
+      await playTrack(tracks[startIndex]);
+    },
+    [playTrack]
+  );
+
+  const searchYouTubePlaylists = useCallback(
+    async (query: string): Promise<YouTubePlaylistSearchResult[]> => {
+      if (!query.trim()) return [];
+      return await YouTubeService.searchPlaylists(query);
+    },
+    []
+  );
+
+  const getYouTubePlaylist = useCallback(async (playlistId: string): Promise<YouTubePlaylist | null> => {
+    if (!playlistId.trim()) return null;
+    return await YouTubeService.getPlaylist(playlistId);
+  }, []);
+
   const searchMusic = useCallback(async (query: string): Promise<SearchResult[]> => {
     try {
       if (backendService) {
@@ -335,7 +374,10 @@ export function MusicPlayerProvider({ children }: { children: ReactNode }) {
         removeTrackFromPlaylist,
         deletePlaylist,
         playPlaylist,
+        playQueue,
         searchMusic,
+        searchYouTubePlaylists,
+        getYouTubePlaylist,
         getTrendingMusic,
         getAudioUrl,
       }}
