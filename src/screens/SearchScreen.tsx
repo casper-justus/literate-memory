@@ -10,7 +10,6 @@ import {
   Alert,
 } from 'react-native';
 import { Input } from '../components';
-import YouTubeService from '../services/YouTubeService';
 import { SearchResult, Track } from '../types/music';
 import { useMusicPlayer } from '../context/MusicPlayerContext';
 
@@ -18,14 +17,24 @@ export default function SearchScreen() {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<SearchResult[]>([]);
   const [loading, setLoading] = useState(false);
-  const { playTrack, addToQueue, playlists, addTrackToPlaylist } = useMusicPlayer();
+  const { playTrack, addToQueue, playlists, addTrackToPlaylist, searchMusic, getTrendingMusic, getAudioUrl } = useMusicPlayer();
+
+  const parseDurationToSeconds = (duration: string): number => {
+    const parts = duration.split(':').map(Number);
+    if (parts.length === 3) {
+      return parts[0] * 3600 + parts[1] * 60 + parts[2];
+    } else if (parts.length === 2) {
+      return parts[0] * 60 + parts[1];
+    }
+    return parts[0] || 0;
+  };
 
   const handleSearch = async () => {
     if (!query.trim()) return;
 
     setLoading(true);
     try {
-      const searchResults = await YouTubeService.search(query);
+      const searchResults = await searchMusic(query);
       setResults(searchResults);
     } catch (error) {
       console.error('Search error:', error);
@@ -38,7 +47,7 @@ export default function SearchScreen() {
   const loadTrending = async () => {
     setLoading(true);
     try {
-      const trending = await YouTubeService.getTrendingMusic();
+      const trending = await getTrendingMusic();
       setResults(trending);
     } catch (error) {
       console.error('Load trending error:', error);
@@ -52,7 +61,7 @@ export default function SearchScreen() {
       id: result.videoId,
       title: result.title,
       artist: result.channelTitle,
-      duration: YouTubeService.parseDurationToSeconds(result.duration),
+      duration: parseDurationToSeconds(result.duration),
       thumbnail: result.thumbnail,
       videoId: result.videoId,
     };
@@ -65,7 +74,7 @@ export default function SearchScreen() {
       id: result.videoId,
       title: result.title,
       artist: result.channelTitle,
-      duration: YouTubeService.parseDurationToSeconds(result.duration),
+      duration: parseDurationToSeconds(result.duration),
       thumbnail: result.thumbnail,
       videoId: result.videoId,
     };
@@ -79,7 +88,7 @@ export default function SearchScreen() {
       id: result.videoId,
       title: result.title,
       artist: result.channelTitle,
-      duration: YouTubeService.parseDurationToSeconds(result.duration),
+      duration: parseDurationToSeconds(result.duration),
       thumbnail: result.thumbnail,
       videoId: result.videoId,
     };
