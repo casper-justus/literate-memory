@@ -1,6 +1,7 @@
 import { Track, Playlist } from './music';
 
 export type RootStackParamList = {
+  Main: undefined;
   Home: undefined;
   Details: { itemId: string; title: string };
   Profile: undefined;

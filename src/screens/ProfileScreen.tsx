@@ -169,7 +169,7 @@ export default function ProfileScreen({ navigation }: Props) {
       <View style={styles.buttonContainer}>
         <Button
           title="Back to Home"
-          onPress={() => navigation.navigate('Home')}
+          onPress={() => navigation.navigate('Main')}
           variant="secondary"
         />
       </View>
