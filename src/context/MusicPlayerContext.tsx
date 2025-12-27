@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
-import { AVPlaybackStatus } from 'expo-av';
+import { PlaybackStatus } from 'expo-audio';
 import {
   Track,
   PlayerState,
@@ -83,7 +83,7 @@ export function MusicPlayerProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     AudioPlayerService.initialize();
 
-    AudioPlayerService.setStatusUpdateCallback((status: AVPlaybackStatus) => {
+    AudioPlayerService.addListener((status: PlaybackStatus) => {
       if (status.isLoaded) {
         setPlayerState((prev) => ({
           ...prev,
@@ -91,11 +91,31 @@ export function MusicPlayerProvider({ children }: { children: ReactNode }) {
           duration: status.durationMillis || 0,
           isPlaying: status.isPlaying,
         }));
+
+        if (status.didJustFinish) {
+          nextTrack();
+        }
       }
     });
 
-    AudioPlayerService.setTrackEndCallback(() => {
-      nextTrack();
+    AudioPlayerService.setOnRemoteControlEvent((event) => {
+      switch (event.type) {
+        case 'play':
+          resumeTrack();
+          break;
+        case 'pause':
+          pauseTrack();
+          break;
+        case 'next':
+          nextTrack();
+          break;
+        case 'previous':
+          previousTrack();
+          break;
+        case 'seek':
+          seekTo(event.positionMillis);
+          break;
+      }
     });
 
     return () => {
@@ -123,7 +143,6 @@ export function MusicPlayerProvider({ children }: { children: ReactNode }) {
 
       const trackWithUrl = { ...track, url: audioUrl };
       
-      // Fetch lyrics if not already present
       if (!trackWithUrl.lyrics) {
         try {
           const lyrics = await LyricsService.getLyrics(track.title, track.artist);
@@ -143,6 +162,7 @@ export function MusicPlayerProvider({ children }: { children: ReactNode }) {
           currentTrack: trackWithUrl,
           isPlaying: true,
         }));
+        await AudioPlayerService.setActiveLockScreenControls(trackWithUrl);
       }
     } catch (error) {
       console.error('Play track error:', error);
