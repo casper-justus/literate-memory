@@ -6,6 +6,7 @@ export class AudioPlayerService {
   private currentTrack: Track | null = null;
   private onStatusUpdate?: (status: AVPlaybackStatus) => void;
   private onTrackEnd?: () => void;
+  private loadingPromise: Promise<void> | null = null;
 
   async initialize() {
     try {
@@ -22,10 +23,26 @@ export class AudioPlayerService {
   }
 
   async loadTrack(track: Track, autoPlay: boolean = true): Promise<boolean> {
+    // If there's an ongoing load, wait for it to finish first
+    if (this.loadingPromise) {
+      await this.loadingPromise;
+    }
+
+    let resolveLoading: () => void;
+    this.loadingPromise = new Promise((resolve) => {
+      resolveLoading = resolve;
+    });
+
     try {
       if (this.sound) {
-        await this.sound.unloadAsync();
-        this.sound = null;
+        try {
+          await this.sound.stopAsync();
+          await this.sound.unloadAsync();
+        } catch (e) {
+          console.error('Error unloading sound:', e);
+        } finally {
+          this.sound = null;
+        }
       }
 
       if (!track.url) {
@@ -46,6 +63,9 @@ export class AudioPlayerService {
     } catch (error) {
       console.error('Load track error:', error);
       return false;
+    } finally {
+      this.loadingPromise = null;
+      resolveLoading!();
     }
   }
 

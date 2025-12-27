@@ -1,8 +1,9 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
 import { AVPlaybackStatus } from 'expo-av';
-import { Track, PlayerState, Playlist, SearchResult } from '../types/music';
+import { Track, PlayerState, Playlist, SearchResult, LyricsLine } from '../types/music';
 import AudioPlayerService from '../services/AudioPlayerService';
 import YouTubeService from '../services/YouTubeService';
+import LyricsService from '../services/LyricsService';
 import BackendMusicService, { BackendMusicService as BackendMusicServiceClass } from '../services/BackendMusicService';
 import { useStorage } from '../hooks/useStorage';
 
@@ -111,6 +112,19 @@ export function MusicPlayerProvider({ children }: { children: ReactNode }) {
       }
 
       const trackWithUrl = { ...track, url: audioUrl };
+      
+      // Fetch lyrics if not already present
+      if (!trackWithUrl.lyrics) {
+        try {
+          const lyrics = await LyricsService.getLyrics(track.title, track.artist);
+          if (lyrics) {
+            trackWithUrl.lyrics = lyrics;
+          }
+        } catch (err) {
+          console.error('Error fetching lyrics:', err);
+        }
+      }
+
       const success = await AudioPlayerService.loadTrack(trackWithUrl, true);
 
       if (success) {
