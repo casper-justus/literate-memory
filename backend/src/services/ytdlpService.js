@@ -8,7 +8,8 @@ const execAsync = promisify(exec);
 class YtDlpService {
   constructor() {
     this.ytdlpPath = process.env.YTDLP_PATH || 'yt-dlp';
-    this.cacheDir = process.env.CACHE_DIR || path.join(__dirname, '../../cache');
+    this.cacheDir =
+      process.env.CACHE_DIR || path.join(__dirname, '../../cache');
     this.ensureCacheDir();
   }
 
@@ -23,25 +24,32 @@ class YtDlpService {
   async search(query, limit = 20) {
     try {
       const command = `${this.ytdlpPath} "ytsearch${limit}:${query}" --dump-json --skip-download`;
-      const { stdout } = await execAsync(command, { maxBuffer: 10 * 1024 * 1024 });
-      
-      const results = stdout.trim().split('\n').filter(line => line).map(line => {
-        try {
-          const data = JSON.parse(line);
-          return {
-            videoId: data.id,
-            title: data.title,
-            channelTitle: data.uploader || data.channel,
-            thumbnail: data.thumbnail || data.thumbnails?.[0]?.url,
-            duration: this.formatDuration(data.duration),
-            durationSeconds: data.duration,
-            viewCount: data.view_count?.toString(),
-            uploadDate: data.upload_date,
-          };
-        } catch (e) {
-          return null;
-        }
-      }).filter(Boolean);
+      const { stdout } = await execAsync(command, {
+        maxBuffer: 10 * 1024 * 1024,
+      });
+
+      const results = stdout
+        .trim()
+        .split('\n')
+        .filter((line) => line)
+        .map((line) => {
+          try {
+            const data = JSON.parse(line);
+            return {
+              videoId: data.id,
+              title: data.title,
+              channelTitle: data.uploader || data.channel,
+              thumbnail: data.thumbnail || data.thumbnails?.[0]?.url,
+              duration: this.formatDuration(data.duration),
+              durationSeconds: data.duration,
+              viewCount: data.view_count?.toString(),
+              uploadDate: data.upload_date,
+            };
+          } catch (e) {
+            return null;
+          }
+        })
+        .filter(Boolean);
 
       return results;
     } catch (error) {
@@ -53,8 +61,10 @@ class YtDlpService {
   async getVideoInfo(videoId) {
     try {
       const command = `${this.ytdlpPath} "https://www.youtube.com/watch?v=${videoId}" --dump-json --skip-download`;
-      const { stdout } = await execAsync(command, { maxBuffer: 10 * 1024 * 1024 });
-      
+      const { stdout } = await execAsync(command, {
+        maxBuffer: 10 * 1024 * 1024,
+      });
+
       const data = JSON.parse(stdout);
       return {
         videoId: data.id,
@@ -77,7 +87,7 @@ class YtDlpService {
     try {
       const command = `${this.ytdlpPath} "https://www.youtube.com/watch?v=${videoId}" -f "bestaudio" --get-url`;
       const { stdout } = await execAsync(command, { maxBuffer: 1024 * 1024 });
-      
+
       const url = stdout.trim();
       return url;
     } catch (error) {
@@ -89,14 +99,17 @@ class YtDlpService {
   async getAudioFormats(videoId) {
     try {
       const command = `${this.ytdlpPath} "https://www.youtube.com/watch?v=${videoId}" -F --dump-json --skip-download`;
-      const { stdout } = await execAsync(command, { maxBuffer: 5 * 1024 * 1024 });
-      
+      const { stdout } = await execAsync(command, {
+        maxBuffer: 5 * 1024 * 1024,
+      });
+
       const data = JSON.parse(stdout);
-      const audioFormats = data.formats.filter(f => 
-        f.acodec && f.acodec !== 'none' && !f.vcodec || f.vcodec === 'none'
+      const audioFormats = data.formats.filter(
+        (f) =>
+          (f.acodec && f.acodec !== 'none' && !f.vcodec) || f.vcodec === 'none'
       );
 
-      return audioFormats.map(f => ({
+      return audioFormats.map((f) => ({
         formatId: f.format_id,
         ext: f.ext,
         acodec: f.acodec,
@@ -115,7 +128,7 @@ class YtDlpService {
     try {
       const command = `${this.ytdlpPath} "https://www.youtube.com/watch?v=${videoId}" -f "bestaudio" -o "${outputPath}" --extract-audio --audio-format mp3`;
       await execAsync(command, { maxBuffer: 50 * 1024 * 1024 });
-      
+
       return outputPath;
     } catch (error) {
       console.error('Download audio error:', error);
@@ -126,7 +139,9 @@ class YtDlpService {
   async getTrending(region = 'US') {
     try {
       const command = `${this.ytdlpPath} "https://www.youtube.com/feed/trending" --dump-json --skip-download --playlist-items 1-20`;
-      const { stdout } = await execAsync(command, { maxBuffer: 10 * 1024 * 1024 });
+      const { stdout } = await execAsync(command, {
+        maxBuffer: 10 * 1024 * 1024,
+      });
 
       const results = stdout
         .trim()
@@ -161,7 +176,9 @@ class YtDlpService {
   async getPlaylist(playlistId) {
     try {
       const command = `${this.ytdlpPath} "https://www.youtube.com/playlist?list=${playlistId}" --dump-single-json --flat-playlist --skip-download`;
-      const { stdout } = await execAsync(command, { maxBuffer: 20 * 1024 * 1024 });
+      const { stdout } = await execAsync(command, {
+        maxBuffer: 20 * 1024 * 1024,
+      });
 
       const data = JSON.parse(stdout);
 
@@ -172,7 +189,8 @@ class YtDlpService {
         .map((e) => ({
           videoId: e.id,
           title: e.title,
-          channelTitle: e.uploader || e.channel || e.uploader_id || data.uploader,
+          channelTitle:
+            e.uploader || e.channel || e.uploader_id || data.uploader,
           thumbnail: e.thumbnail || e.thumbnails?.[0]?.url,
           durationSeconds: e.duration || 0,
         }));
@@ -183,7 +201,10 @@ class YtDlpService {
         author: data.uploader || data.channel || 'YouTube',
         description: data.description,
         thumbnail: data.thumbnail,
-        videoCount: typeof data.playlist_count === 'number' ? data.playlist_count : tracks.length,
+        videoCount:
+          typeof data.playlist_count === 'number'
+            ? data.playlist_count
+            : tracks.length,
         tracks,
       };
     } catch (error) {

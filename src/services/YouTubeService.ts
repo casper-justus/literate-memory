@@ -50,7 +50,10 @@ export class YouTubeService {
     throw lastError;
   }
 
-  async search(query: string, maxResults: number = 20): Promise<SearchResult[]> {
+  async search(
+    query: string,
+    maxResults: number = 20
+  ): Promise<SearchResult[]> {
     try {
       const data = await this.invidiousGet<any[]>(`/search`, {
         q: query,
@@ -62,7 +65,8 @@ export class YouTubeService {
         title: item.title,
         channelTitle: item.author,
         thumbnail:
-          item.videoThumbnails?.[0]?.url || this.getDefaultThumbnail(item.videoId),
+          item.videoThumbnails?.[0]?.url ||
+          this.getDefaultThumbnail(item.videoId),
         duration: this.formatDuration(item.lengthSeconds),
         viewCount: item.viewCount?.toString(),
       }));
@@ -86,8 +90,12 @@ export class YouTubeService {
         playlistId: item.playlistId,
         title: item.title,
         author: item.author,
-        thumbnail: item.playlistThumbnail || item.videos?.[0]?.videoThumbnails?.[0]?.url || '',
-        videoCount: typeof item.videoCount === 'number' ? item.videoCount : undefined,
+        thumbnail:
+          item.playlistThumbnail ||
+          item.videos?.[0]?.videoThumbnails?.[0]?.url ||
+          '',
+        videoCount:
+          typeof item.videoCount === 'number' ? item.videoCount : undefined,
       }));
     } catch (error) {
       console.error('Playlist search error:', error);
@@ -141,7 +149,8 @@ export class YouTubeService {
         title: item.title,
         channelTitle: item.author,
         thumbnail:
-          item.videoThumbnails?.[0]?.url || this.getDefaultThumbnail(item.videoId),
+          item.videoThumbnails?.[0]?.url ||
+          this.getDefaultThumbnail(item.videoId),
         duration: this.formatDuration(item.lengthSeconds),
         viewCount: item.viewCount?.toString(),
       }));
@@ -159,9 +168,11 @@ export class YouTubeService {
         id: video.videoId,
         title: video.title,
         artist: video.author || data.author || 'Unknown',
-        duration: typeof video.lengthSeconds === 'number' ? video.lengthSeconds : 0,
+        duration:
+          typeof video.lengthSeconds === 'number' ? video.lengthSeconds : 0,
         thumbnail:
-          video.videoThumbnails?.[0]?.url || this.getDefaultThumbnail(video.videoId),
+          video.videoThumbnails?.[0]?.url ||
+          this.getDefaultThumbnail(video.videoId),
         videoId: video.videoId,
       }));
 

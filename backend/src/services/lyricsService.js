@@ -30,7 +30,8 @@ class LyricsService {
       if (typeof plainLyrics === 'string' && plainLyrics.trim().length > 0) {
         return {
           lyrics: plainLyrics.trim(),
-          syncedLyrics: typeof syncedLyrics === 'string' ? syncedLyrics : undefined,
+          syncedLyrics:
+            typeof syncedLyrics === 'string' ? syncedLyrics : undefined,
           source: 'lrclib',
         };
       }

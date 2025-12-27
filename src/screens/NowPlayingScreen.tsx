@@ -18,7 +18,6 @@ import { useMusicPlayer } from '../context/MusicPlayerContext';
 import { Track } from '../types/music';
 import LyricsView from '../components/LyricsView';
 
-
 const { width, height } = Dimensions.get('window');
 
 type NavigationProp = StackNavigationProp<RootStackParamList>;
@@ -40,8 +39,14 @@ export default function NowPlayingScreen() {
     addTrackToPlaylist,
   } = useMusicPlayer();
 
-  const { currentTrack, isPlaying, position, duration, repeatMode, shuffleMode } =
-    playerState;
+  const {
+    currentTrack,
+    isPlaying,
+    position,
+    duration,
+    repeatMode,
+    shuffleMode,
+  } = playerState;
 
   const [sliderValue, setSliderValue] = useState(0);
   const [isSeeking, setIsSeeking] = useState(false);
@@ -81,7 +86,7 @@ export default function NowPlayingScreen() {
   };
 
   const cycleRepeatMode = () => {
-    const modes: Array<'off' | 'one' | 'all'> = ['off', 'one', 'all'];
+    const modes: ('off' | 'one' | 'all')[] = ['off', 'one', 'all'];
     const currentIndex = modes.indexOf(repeatMode);
     const nextIndex = (currentIndex + 1) % modes.length;
     setRepeatMode(modes[nextIndex]);
@@ -245,10 +250,7 @@ export default function NowPlayingScreen() {
             />
           </TouchableOpacity>
 
-          <TouchableOpacity
-            style={styles.controlButton}
-            onPress={nextTrack}
-          >
+          <TouchableOpacity style={styles.controlButton} onPress={nextTrack}>
             <Ionicons name="play-skip-forward" size={32} color="#FFFFFF" />
           </TouchableOpacity>
 

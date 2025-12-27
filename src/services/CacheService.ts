@@ -54,7 +54,11 @@ class CacheService {
 
       if (downloadResult.status === 200) {
         // Update cache index
-        await this.updateCacheIndex(track, cachePath, downloadResult.headers['content-length'] || '0');
+        await this.updateCacheIndex(
+          track,
+          cachePath,
+          downloadResult.headers['content-length'] || '0'
+        );
 
         // Check and cleanup if needed
         await this.cleanupIfNeeded();
@@ -153,7 +157,7 @@ class CacheService {
   ): Promise<void> {
     try {
       const cachedTracks = await this.getCachedTracks();
-      
+
       const newCachedTrack: CachedTrack = {
         track,
         fileUri,
@@ -165,10 +169,7 @@ class CacheService {
       const filtered = cachedTracks.filter((t) => t.track.id !== track.id);
       filtered.push(newCachedTrack);
 
-      await AsyncStorage.setItem(
-        this.cacheIndexKey,
-        JSON.stringify(filtered)
-      );
+      await AsyncStorage.setItem(this.cacheIndexKey, JSON.stringify(filtered));
     } catch (error) {
       console.error('Error updating cache index:', error);
     }
@@ -213,7 +214,10 @@ class CacheService {
     });
   }
 
-  async preloadPlaylist(tracks: Track[], getAudioUrl: (track: Track) => Promise<string>): Promise<void> {
+  async preloadPlaylist(
+    tracks: Track[],
+    getAudioUrl: (track: Track) => Promise<string>
+  ): Promise<void> {
     // Preload multiple tracks
     for (const track of tracks) {
       try {

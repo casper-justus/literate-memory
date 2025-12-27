@@ -1,4 +1,11 @@
-import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+  ReactNode,
+} from 'react';
 import { AVPlaybackStatus } from 'expo-av';
 import {
   Track,
@@ -11,7 +18,9 @@ import {
 import AudioPlayerService from '../services/AudioPlayerService';
 import YouTubeService from '../services/YouTubeService';
 import LyricsService from '../services/LyricsService';
-import BackendMusicService, { BackendMusicService as BackendMusicServiceClass } from '../services/BackendMusicService';
+import BackendMusicService, {
+  BackendMusicService as BackendMusicServiceClass,
+} from '../services/BackendMusicService';
 import { useStorage } from '../hooks/useStorage';
 
 interface MusicPlayerContextType {
@@ -37,15 +46,23 @@ interface MusicPlayerContextType {
   removeTrackFromPlaylist: (playlistId: string, trackId: string) => void;
   deletePlaylist: (playlistId: string) => void;
   playPlaylist: (playlist: Playlist) => Promise<void>;
-  playQueue: (tracks: Track[], startIndex?: number, playlist?: Playlist | null) => Promise<void>;
+  playQueue: (
+    tracks: Track[],
+    startIndex?: number,
+    playlist?: Playlist | null
+  ) => Promise<void>;
   searchMusic: (query: string) => Promise<SearchResult[]>;
-  searchYouTubePlaylists: (query: string) => Promise<YouTubePlaylistSearchResult[]>;
+  searchYouTubePlaylists: (
+    query: string
+  ) => Promise<YouTubePlaylistSearchResult[]>;
   getYouTubePlaylist: (playlistId: string) => Promise<YouTubePlaylist | null>;
   getTrendingMusic: () => Promise<SearchResult[]>;
   getAudioUrl: (videoId: string) => Promise<string | null>;
 }
 
-const MusicPlayerContext = createContext<MusicPlayerContextType | undefined>(undefined);
+const MusicPlayerContext = createContext<MusicPlayerContextType | undefined>(
+  undefined
+);
 
 interface AppSettings {
   useBackendApi: boolean;
@@ -64,13 +81,16 @@ export function MusicPlayerProvider({ children }: { children: ReactNode }) {
     shuffleMode: false,
   });
 
-  const { storedValue: playlists, setValue: setPlaylists } = useStorage<Playlist[]>('playlists', []);
+  const { storedValue: playlists, setValue: setPlaylists } = useStorage<
+    Playlist[]
+  >('playlists', []);
   const { storedValue: settings } = useStorage<AppSettings>('appSettings', {
     useBackendApi: false,
     backendUrl: 'http://localhost:3000/api/music',
   });
   const [currentPlaylist, setCurrentPlaylist] = useState<Playlist | null>(null);
-  const [backendService, setBackendService] = useState<BackendMusicServiceClass | null>(null);
+  const [backendService, setBackendService] =
+    useState<BackendMusicServiceClass | null>(null);
 
   useEffect(() => {
     if (settings.useBackendApi) {
@@ -103,51 +123,58 @@ export function MusicPlayerProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
-  const playTrack = useCallback(async (track: Track) => {
-    try {
-      let audioUrl: string | undefined = track.url;
-      
-      if (!audioUrl && track.videoId) {
-        if (backendService) {
-          audioUrl = await backendService.getAudioUrl(track.videoId) || undefined;
-        } else {
-          const fetchedUrl = await YouTubeService.getAudioUrl(track.videoId);
-          audioUrl = fetchedUrl || undefined;
-        }
-      }
+  const playTrack = useCallback(
+    async (track: Track) => {
+      try {
+        let audioUrl: string | undefined = track.url;
 
-      if (!audioUrl) {
-        console.error('Unable to get audio URL');
-        return;
-      }
-
-      const trackWithUrl = { ...track, url: audioUrl };
-      
-      // Fetch lyrics if not already present
-      if (!trackWithUrl.lyrics) {
-        try {
-          const lyrics = await LyricsService.getLyrics(track.title, track.artist);
-          if (lyrics) {
-            trackWithUrl.lyrics = lyrics;
+        if (!audioUrl && track.videoId) {
+          if (backendService) {
+            audioUrl =
+              (await backendService.getAudioUrl(track.videoId)) || undefined;
+          } else {
+            const fetchedUrl = await YouTubeService.getAudioUrl(track.videoId);
+            audioUrl = fetchedUrl || undefined;
           }
-        } catch (err) {
-          console.error('Error fetching lyrics:', err);
         }
-      }
 
-      const success = await AudioPlayerService.loadTrack(trackWithUrl, true);
+        if (!audioUrl) {
+          console.error('Unable to get audio URL');
+          return;
+        }
 
-      if (success) {
-        setPlayerState((prev) => ({
-          ...prev,
-          currentTrack: trackWithUrl,
-          isPlaying: true,
-        }));
+        const trackWithUrl = { ...track, url: audioUrl };
+
+        // Fetch lyrics if not already present
+        if (!trackWithUrl.lyrics) {
+          try {
+            const lyrics = await LyricsService.getLyrics(
+              track.title,
+              track.artist
+            );
+            if (lyrics) {
+              trackWithUrl.lyrics = lyrics;
+            }
+          } catch (err) {
+            console.error('Error fetching lyrics:', err);
+          }
+        }
+
+        const success = await AudioPlayerService.loadTrack(trackWithUrl, true);
+
+        if (success) {
+          setPlayerState((prev) => ({
+            ...prev,
+            currentTrack: trackWithUrl,
+            isPlaying: true,
+          }));
+        }
+      } catch (error) {
+        console.error('Play track error:', error);
       }
-    } catch (error) {
-      console.error('Play track error:', error);
-    }
-  }, [backendService]);
+    },
+    [backendService]
+  );
 
   const pauseTrack = useCallback(async () => {
     await AudioPlayerService.pause();
@@ -243,60 +270,79 @@ export function MusicPlayerProvider({ children }: { children: ReactNode }) {
     setPlayerState((prev) => ({ ...prev, shuffleMode: !prev.shuffleMode }));
   }, []);
 
-  const createPlaylist = useCallback((name: string) => {
-    const newPlaylist: Playlist = {
-      id: Date.now().toString(),
-      name,
-      tracks: [],
-      createdAt: new Date(),
-    };
-    setPlaylists([...playlists, newPlaylist]);
-  }, [playlists, setPlaylists]);
+  const createPlaylist = useCallback(
+    (name: string) => {
+      const newPlaylist: Playlist = {
+        id: Date.now().toString(),
+        name,
+        tracks: [],
+        createdAt: new Date(),
+      };
+      setPlaylists([...playlists, newPlaylist]);
+    },
+    [playlists, setPlaylists]
+  );
 
-  const addTrackToPlaylist = useCallback((playlistId: string, track: Track) => {
-    const updatedPlaylists = playlists.map((playlist) => {
-      if (playlist.id === playlistId) {
-        return {
-          ...playlist,
-          tracks: [...playlist.tracks, track],
-        };
-      }
-      return playlist;
-    });
-    setPlaylists(updatedPlaylists);
-  }, [playlists, setPlaylists]);
+  const addTrackToPlaylist = useCallback(
+    (playlistId: string, track: Track) => {
+      const updatedPlaylists = playlists.map((playlist) => {
+        if (playlist.id === playlistId) {
+          return {
+            ...playlist,
+            tracks: [...playlist.tracks, track],
+          };
+        }
+        return playlist;
+      });
+      setPlaylists(updatedPlaylists);
+    },
+    [playlists, setPlaylists]
+  );
 
-  const removeTrackFromPlaylist = useCallback((playlistId: string, trackId: string) => {
-    const updatedPlaylists = playlists.map((playlist) => {
-      if (playlist.id === playlistId) {
-        return {
-          ...playlist,
-          tracks: playlist.tracks.filter((t) => t.id !== trackId),
-        };
-      }
-      return playlist;
-    });
-    setPlaylists(updatedPlaylists);
-  }, [playlists, setPlaylists]);
+  const removeTrackFromPlaylist = useCallback(
+    (playlistId: string, trackId: string) => {
+      const updatedPlaylists = playlists.map((playlist) => {
+        if (playlist.id === playlistId) {
+          return {
+            ...playlist,
+            tracks: playlist.tracks.filter((t) => t.id !== trackId),
+          };
+        }
+        return playlist;
+      });
+      setPlaylists(updatedPlaylists);
+    },
+    [playlists, setPlaylists]
+  );
 
-  const deletePlaylist = useCallback((playlistId: string) => {
-    setPlaylists(playlists.filter((p) => p.id !== playlistId));
-  }, [playlists, setPlaylists]);
+  const deletePlaylist = useCallback(
+    (playlistId: string) => {
+      setPlaylists(playlists.filter((p) => p.id !== playlistId));
+    },
+    [playlists, setPlaylists]
+  );
 
-  const playPlaylist = useCallback(async (playlist: Playlist) => {
-    if (playlist.tracks.length === 0) return;
+  const playPlaylist = useCallback(
+    async (playlist: Playlist) => {
+      if (playlist.tracks.length === 0) return;
 
-    setCurrentPlaylist(playlist);
-    setPlayerState((prev) => ({
-      ...prev,
-      queue: playlist.tracks,
-      currentIndex: 0,
-    }));
-    await playTrack(playlist.tracks[0]);
-  }, [playTrack]);
+      setCurrentPlaylist(playlist);
+      setPlayerState((prev) => ({
+        ...prev,
+        queue: playlist.tracks,
+        currentIndex: 0,
+      }));
+      await playTrack(playlist.tracks[0]);
+    },
+    [playTrack]
+  );
 
   const playQueue = useCallback(
-    async (tracks: Track[], startIndex: number = 0, playlist: Playlist | null = null) => {
+    async (
+      tracks: Track[],
+      startIndex: number = 0,
+      playlist: Playlist | null = null
+    ) => {
       if (tracks.length === 0) return;
       if (startIndex < 0 || startIndex >= tracks.length) return;
 
@@ -332,18 +378,21 @@ export function MusicPlayerProvider({ children }: { children: ReactNode }) {
     [backendService]
   );
 
-  const searchMusic = useCallback(async (query: string): Promise<SearchResult[]> => {
-    try {
-      if (backendService) {
-        return await backendService.search(query);
-      } else {
-        return await YouTubeService.search(query);
+  const searchMusic = useCallback(
+    async (query: string): Promise<SearchResult[]> => {
+      try {
+        if (backendService) {
+          return await backendService.search(query);
+        } else {
+          return await YouTubeService.search(query);
+        }
+      } catch (error) {
+        console.error('Search error:', error);
+        return [];
       }
-    } catch (error) {
-      console.error('Search error:', error);
-      return [];
-    }
-  }, [backendService]);
+    },
+    [backendService]
+  );
 
   const getTrendingMusic = useCallback(async (): Promise<SearchResult[]> => {
     try {
@@ -358,18 +407,21 @@ export function MusicPlayerProvider({ children }: { children: ReactNode }) {
     }
   }, [backendService]);
 
-  const getAudioUrl = useCallback(async (videoId: string): Promise<string | null> => {
-    try {
-      if (backendService) {
-        return await backendService.getAudioUrl(videoId);
-      } else {
-        return await YouTubeService.getAudioUrl(videoId);
+  const getAudioUrl = useCallback(
+    async (videoId: string): Promise<string | null> => {
+      try {
+        if (backendService) {
+          return await backendService.getAudioUrl(videoId);
+        } else {
+          return await YouTubeService.getAudioUrl(videoId);
+        }
+      } catch (error) {
+        console.error('Get audio URL error:', error);
+        return null;
       }
-    } catch (error) {
-      console.error('Get audio URL error:', error);
-      return null;
-    }
-  }, [backendService]);
+    },
+    [backendService]
+  );
 
   return (
     <MusicPlayerContext.Provider

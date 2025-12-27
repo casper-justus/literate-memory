@@ -5,7 +5,7 @@ class MusicController {
   async search(req, res) {
     try {
       const { query, limit } = req.query;
-      
+
       if (!query) {
         return res.status(400).json({ error: 'Query parameter is required' });
       }
@@ -21,7 +21,7 @@ class MusicController {
   async getVideoInfo(req, res) {
     try {
       const { videoId } = req.params;
-      
+
       if (!videoId) {
         return res.status(400).json({ error: 'Video ID is required' });
       }
@@ -37,7 +37,7 @@ class MusicController {
   async getAudioUrl(req, res) {
     try {
       const { videoId } = req.params;
-      
+
       if (!videoId) {
         return res.status(400).json({ error: 'Video ID is required' });
       }
@@ -53,7 +53,7 @@ class MusicController {
   async getAudioFormats(req, res) {
     try {
       const { videoId } = req.params;
-      
+
       if (!videoId) {
         return res.status(400).json({ error: 'Video ID is required' });
       }
@@ -80,13 +80,13 @@ class MusicController {
   async streamAudio(req, res) {
     try {
       const { videoId } = req.params;
-      
+
       if (!videoId) {
         return res.status(400).json({ error: 'Video ID is required' });
       }
 
       const url = await ytdlpService.getAudioUrl(videoId);
-      
+
       // Redirect to the audio stream URL
       res.redirect(url);
     } catch (error) {
@@ -116,7 +116,9 @@ class MusicController {
       const { artist, title } = req.query;
 
       if (!artist || !title) {
-        return res.status(400).json({ error: 'artist and title query parameters are required' });
+        return res
+          .status(400)
+          .json({ error: 'artist and title query parameters are required' });
       }
 
       const lyrics = await lyricsService.getLyrics(artist, title);

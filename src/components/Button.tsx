@@ -43,11 +43,7 @@ export default function Button({
 
   return (
     <TouchableOpacity
-      style={[
-        styles.button,
-        { backgroundColor: getBackgroundColor() },
-        style,
-      ]}
+      style={[styles.button, { backgroundColor: getBackgroundColor() }, style]}
       onPress={onPress}
       disabled={disabled || loading}
       activeOpacity={0.7}

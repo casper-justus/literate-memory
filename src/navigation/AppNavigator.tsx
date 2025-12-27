@@ -117,18 +117,18 @@ export default function AppNavigator() {
             },
           }}
         >
-          <Stack.Screen 
-            name="Home" 
+          <Stack.Screen
+            name="Home"
             component={TabNavigator}
             options={{ headerShown: false }}
           />
-          <Stack.Screen 
-            name="Details" 
+          <Stack.Screen
+            name="Details"
             component={DetailsScreen}
             options={{ title: 'Details' }}
           />
-          <Stack.Screen 
-            name="PlaylistDetails" 
+          <Stack.Screen
+            name="PlaylistDetails"
             component={PlaylistDetailsScreen}
             options={{ title: 'Playlist' }}
           />
@@ -137,10 +137,10 @@ export default function AppNavigator() {
             component={YouTubePlaylistScreen}
             options={{ title: 'YouTube Playlist' }}
           />
-          <Stack.Screen 
-            name="NowPlaying" 
+          <Stack.Screen
+            name="NowPlaying"
             component={NowPlayingScreen}
-            options={{ 
+            options={{
               title: 'Now Playing',
               presentation: 'modal',
             }}
