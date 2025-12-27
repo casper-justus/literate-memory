@@ -8,14 +8,20 @@
     "dev": "nodemon src/index.js",
     "install-ytdlp": "pip3 install -U yt-dlp"
   },
-  "keywords": ["music", "youtube", "yt-dlp", "api"],
+  "keywords": [
+    "music",
+    "youtube",
+    "yt-dlp",
+    "api"
+  ],
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "express": "^4.18.2",
+    "axios": "^1.6.0",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
-    "axios": "^1.6.0"
+    "expo-audio": "^1.1.1",
+    "express": "^4.18.2"
   },
   "devDependencies": {
     "nodemon": "^3.0.1"
