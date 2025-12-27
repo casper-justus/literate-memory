@@ -32,6 +32,8 @@ app.get('/', (req, res) => {
       audioUrl: '/api/music/audio/:videoId',
       formats: '/api/music/formats/:videoId',
       stream: '/api/music/stream/:videoId',
+      playlist: '/api/music/playlist/:playlistId',
+      lyrics: '/api/music/lyrics?artist=<artist>&title=<title>',
       health: '/api/music/health',
     },
   });

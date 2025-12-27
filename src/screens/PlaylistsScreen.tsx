@@ -59,22 +59,27 @@ export default function PlaylistsScreen() {
     Alert.alert('Playing', `Now playing: ${playlist.name}`);
   };
 
+  const openPlaylistMenu = (playlist: Playlist) => {
+    Alert.alert(playlist.name, 'Choose action', [
+      { text: 'Play', onPress: () => handlePlayPlaylist(playlist) },
+      {
+        text: 'View Details',
+        onPress: () => navigation.navigate('PlaylistDetails', { playlistId: playlist.id }),
+      },
+      {
+        text: 'Delete',
+        onPress: () => handleDeletePlaylist(playlist.id, playlist.name),
+        style: 'destructive',
+      },
+      { text: 'Cancel', style: 'cancel' },
+    ]);
+  };
+
   const renderPlaylistItem = ({ item }: { item: Playlist }) => (
     <Card>
       <TouchableOpacity
         onPress={() => navigation.navigate('PlaylistDetails', { playlistId: item.id })}
-        onLongPress={() => {
-          Alert.alert(
-            item.name,
-            'Choose action',
-            [
-              { text: 'Play', onPress: () => handlePlayPlaylist(item) },
-              { text: 'View Details', onPress: () => navigation.navigate('PlaylistDetails', { playlistId: item.id }) },
-              { text: 'Delete', onPress: () => handleDeletePlaylist(item.id, item.name), style: 'destructive' },
-              { text: 'Cancel', style: 'cancel' },
-            ]
-          );
-        }}
+        activeOpacity={0.85}
       >
         <View style={styles.playlistItem}>
           <View style={styles.playlistIcon}>
@@ -86,12 +91,29 @@ export default function PlaylistsScreen() {
               {item.tracks.length} {item.tracks.length === 1 ? 'track' : 'tracks'}
             </Text>
           </View>
-          <TouchableOpacity
-            onPress={() => handlePlayPlaylist(item)}
-            style={styles.playButton}
-          >
-            <Ionicons name="play" size={18} color="#FFFFFF" />
-          </TouchableOpacity>
+
+          <View style={styles.actions}>
+            <TouchableOpacity
+              onPress={(e) => {
+                e.stopPropagation();
+                handlePlayPlaylist(item);
+              }}
+              style={styles.playButton}
+            >
+              <Ionicons name="play" size={18} color="#FFFFFF" />
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={(e) => {
+                e.stopPropagation();
+                openPlaylistMenu(item);
+              }}
+              style={styles.menuButton}
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            >
+              <Ionicons name="ellipsis-vertical" size={18} color="#FFFFFF" />
+            </TouchableOpacity>
+          </View>
         </View>
       </TouchableOpacity>
     </Card>
@@ -203,6 +225,10 @@ const styles = StyleSheet.create({
     color: '#AAAAAA',
     fontSize: 14,
   },
+  actions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
   playButton: {
     width: 44,
     height: 44,
@@ -210,6 +236,13 @@ const styles = StyleSheet.create({
     backgroundColor: '#007AFF',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  menuButton: {
+    width: 44,
+    height: 44,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginLeft: 4,
   },
   emptyContainer: {
     flex: 1,

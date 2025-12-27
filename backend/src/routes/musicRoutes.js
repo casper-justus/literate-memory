@@ -21,6 +21,12 @@ router.get('/formats/:videoId', musicController.getAudioFormats);
 // Stream audio (redirect to stream URL)
 router.get('/stream/:videoId', musicController.streamAudio);
 
+// Get playlist information
+router.get('/playlist/:playlistId', musicController.getPlaylist);
+
+// Lyrics
+router.get('/lyrics', musicController.getLyrics);
+
 // Download endpoints
 router.post('/download/track/:videoId', downloadController.downloadTrack);
 router.post('/download/playlist/:playlistId', downloadController.downloadPlaylist);

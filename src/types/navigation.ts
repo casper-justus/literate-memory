@@ -1,4 +1,4 @@
-import { Track, Playlist } from './music';
+import { Track } from './music';
 
 export type RootStackParamList = {
   Home: undefined;
@@ -8,7 +8,9 @@ export type RootStackParamList = {
   Search: undefined;
   Playlists: undefined;
   PlaylistDetails: { playlistId: string };
+  YouTubePlaylist: { playlistId: string; title?: string };
   NowPlaying: undefined;
+  Lyrics: { track?: Track } | undefined;
   Settings: undefined;
 };
 

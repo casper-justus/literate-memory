@@ -127,29 +127,68 @@ class YtDlpService {
     try {
       const command = `${this.ytdlpPath} "https://www.youtube.com/feed/trending" --dump-json --skip-download --playlist-items 1-20`;
       const { stdout } = await execAsync(command, { maxBuffer: 10 * 1024 * 1024 });
-      
-      const results = stdout.trim().split('\n').filter(line => line).map(line => {
-        try {
-          const data = JSON.parse(line);
-          return {
-            videoId: data.id,
-            title: data.title,
-            channelTitle: data.uploader || data.channel,
-            thumbnail: data.thumbnail || data.thumbnails?.[0]?.url,
-            duration: this.formatDuration(data.duration),
-            durationSeconds: data.duration,
-            viewCount: data.view_count?.toString(),
-          };
-        } catch (e) {
-          return null;
-        }
-      }).filter(Boolean);
+
+      const results = stdout
+        .trim()
+        .split('\n')
+        .filter((line) => line)
+        .map((line) => {
+          try {
+            const data = JSON.parse(line);
+            return {
+              videoId: data.id,
+              title: data.title,
+              channelTitle: data.uploader || data.channel,
+              thumbnail: data.thumbnail || data.thumbnails?.[0]?.url,
+              duration: this.formatDuration(data.duration),
+              durationSeconds: data.duration,
+              viewCount: data.view_count?.toString(),
+            };
+          } catch {
+            return null;
+          }
+        })
+        .filter(Boolean);
 
       return results;
     } catch (error) {
       console.error('Get trending error:', error);
       // Fallback to search for popular music
       return this.search('top music 2024', 20);
+    }
+  }
+
+  async getPlaylist(playlistId) {
+    try {
+      const command = `${this.ytdlpPath} "https://www.youtube.com/playlist?list=${playlistId}" --dump-single-json --flat-playlist --skip-download`;
+      const { stdout } = await execAsync(command, { maxBuffer: 20 * 1024 * 1024 });
+
+      const data = JSON.parse(stdout);
+
+      const entries = Array.isArray(data.entries) ? data.entries : [];
+
+      const tracks = entries
+        .filter((e) => e && e.id)
+        .map((e) => ({
+          videoId: e.id,
+          title: e.title,
+          channelTitle: e.uploader || e.channel || e.uploader_id || data.uploader,
+          thumbnail: e.thumbnail || e.thumbnails?.[0]?.url,
+          durationSeconds: e.duration || 0,
+        }));
+
+      return {
+        playlistId,
+        title: data.title,
+        author: data.uploader || data.channel || 'YouTube',
+        description: data.description,
+        thumbnail: data.thumbnail,
+        videoCount: typeof data.playlist_count === 'number' ? data.playlist_count : tracks.length,
+        tracks,
+      };
+    } catch (error) {
+      console.error('Get playlist error:', error);
+      throw new Error('Failed to get playlist');
     }
   }
 

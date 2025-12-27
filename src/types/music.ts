@@ -41,3 +41,21 @@ export interface SearchResult {
   duration: string;
   viewCount?: string;
 }
+
+export interface YouTubePlaylistSearchResult {
+  playlistId: string;
+  title: string;
+  author: string;
+  thumbnail: string;
+  videoCount?: number;
+}
+
+export interface YouTubePlaylist {
+  playlistId: string;
+  title: string;
+  author: string;
+  description?: string;
+  thumbnail?: string;
+  videoCount: number;
+  tracks: Track[];
+}

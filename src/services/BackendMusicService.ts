@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { SearchResult } from '../types/music';
+import { SearchResult, Track, YouTubePlaylist } from '../types/music';
 
 const API_BASE = __DEV__ 
   ? 'http://localhost:3000/api/music' 
@@ -75,6 +75,69 @@ class BackendMusicService {
     } catch (error) {
       console.error('Backend get trending error:', error);
       return [];
+    }
+  }
+
+  async getPlaylist(playlistId: string): Promise<YouTubePlaylist | null> {
+    try {
+      const response = await axios.get(`${this.apiBase}/playlist/${playlistId}`, {
+        timeout: 30000,
+      });
+
+      const data = response.data;
+      const tracks: Track[] = (data.tracks || []).map((t: any) => ({
+        id: t.videoId,
+        title: t.title,
+        artist: t.channelTitle || data.author || 'Unknown',
+        duration: typeof t.durationSeconds === 'number' ? t.durationSeconds : 0,
+        thumbnail: t.thumbnail,
+        videoId: t.videoId,
+      }));
+
+      return {
+        playlistId: data.playlistId || playlistId,
+        title: data.title,
+        author: data.author,
+        description: data.description,
+        thumbnail: data.thumbnail,
+        videoCount: typeof data.videoCount === 'number' ? data.videoCount : tracks.length,
+        tracks,
+      };
+    } catch (error) {
+      console.error('Backend get playlist error:', error);
+      return null;
+    }
+  }
+
+  async getLyrics(
+    artist: string,
+    title: string
+  ): Promise<{ lyrics: string; syncedLyrics?: string; source: 'lrclib' | 'lyrics.ovh' | 'backend' } | null> {
+    try {
+      const response = await axios.get(`${this.apiBase}/lyrics`, {
+        params: { artist, title },
+        timeout: 30000,
+      });
+
+      const lyrics = response.data?.lyrics;
+      if (typeof lyrics !== 'string' || lyrics.trim().length === 0) {
+        return null;
+      }
+
+      const rawSource = response.data?.source;
+      const source: 'lrclib' | 'lyrics.ovh' | 'backend' =
+        rawSource === 'lrclib' || rawSource === 'lyrics.ovh' ? rawSource : 'backend';
+
+      return {
+        lyrics: lyrics.trim(),
+        syncedLyrics:
+          typeof response.data?.syncedLyrics === 'string'
+            ? response.data.syncedLyrics
+            : undefined,
+        source,
+      };
+    } catch (error) {
+      return null;
     }
   }
 

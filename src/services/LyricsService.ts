@@ -57,5 +57,3 @@ class LyricsService {
     return this.parseLRC(mockLRC);
   }
 }
-
-export default new LyricsService();
