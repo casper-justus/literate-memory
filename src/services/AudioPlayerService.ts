@@ -1,29 +1,26 @@
-import { Audio, AVPlaybackStatus } from 'expo-av';
+import { Audio, PlaybackStatus } from 'expo-audio';
 import { Track } from '../types/music';
 
 export class AudioPlayerService {
-  private sound: Audio.Sound | null = null;
+  private player: Audio.Player;
   private currentTrack: Track | null = null;
-  private onStatusUpdate?: (status: AVPlaybackStatus) => void;
+  private onStatusUpdate?: (status: PlaybackStatus) => void;
   private onTrackEnd?: () => void;
   private loadingPromise: Promise<void> | null = null;
 
+  constructor() {
+    this.player = new Audio.Player();
+  }
+
   async initialize() {
     try {
-      await Audio.setAudioModeAsync({
-        allowsRecordingIOS: false,
-        playsInSilentModeIOS: true,
-        staysActiveInBackground: true,
-        shouldDuckAndroid: true,
-        playThroughEarpieceAndroid: false,
-      });
+      await Audio.requestPermissionsAsync();
     } catch (error) {
       console.error('Audio initialization error:', error);
     }
   }
 
   async loadTrack(track: Track, autoPlay: boolean = true): Promise<boolean> {
-    // If there's an ongoing load, wait for it to finish first
     if (this.loadingPromise) {
       await this.loadingPromise;
     }
@@ -34,15 +31,10 @@ export class AudioPlayerService {
     });
 
     try {
-      if (this.sound) {
-        try {
-          await this.sound.stopAsync();
-          await this.sound.unloadAsync();
-        } catch (e) {
-          console.error('Error unloading sound:', e);
-        } finally {
-          this.sound = null;
-        }
+      const status = await this.player.getStatusAsync();
+      if (status?.isLoaded) {
+        await this.player.stopAsync();
+        await this.player.unloadAsync();
       }
 
       if (!track.url) {
@@ -50,13 +42,12 @@ export class AudioPlayerService {
         return false;
       }
 
-      const { sound } = await Audio.Sound.createAsync(
+      await this.player.loadAsync(
         { uri: track.url },
         { shouldPlay: autoPlay },
-        this.handlePlaybackStatusUpdate.bind(this)
+        true // Stay active in background
       );
 
-      this.sound = sound;
       this.currentTrack = track;
 
       return true;
@@ -71,9 +62,7 @@ export class AudioPlayerService {
 
   async play() {
     try {
-      if (this.sound) {
-        await this.sound.playAsync();
-      }
+      await this.player.playAsync();
     } catch (error) {
       console.error('Play error:', error);
     }
@@ -81,9 +70,7 @@ export class AudioPlayerService {
 
   async pause() {
     try {
-      if (this.sound) {
-        await this.sound.pauseAsync();
-      }
+      await this.player.pauseAsync();
     } catch (error) {
       console.error('Pause error:', error);
     }
@@ -91,9 +78,7 @@ export class AudioPlayerService {
 
   async stop() {
     try {
-      if (this.sound) {
-        await this.sound.stopAsync();
-      }
+      await this.player.stopAsync();
     } catch (error) {
       console.error('Stop error:', error);
     }
@@ -101,9 +86,7 @@ export class AudioPlayerService {
 
   async seekTo(positionMillis: number) {
     try {
-      if (this.sound) {
-        await this.sound.setPositionAsync(positionMillis);
-      }
+      await this.player.setPositionAsync(positionMillis);
     } catch (error) {
       console.error('Seek error:', error);
     }
@@ -111,42 +94,43 @@ export class AudioPlayerService {
 
   async setVolume(volume: number) {
     try {
-      if (this.sound) {
-        await this.sound.setVolumeAsync(volume);
-      }
+      await this.player.setVolumeAsync(volume);
     } catch (error) {
       console.error('Set volume error:', error);
     }
   }
 
-  async getStatus(): Promise<AVPlaybackStatus | null> {
+  async getStatus(): Promise<PlaybackStatus | null> {
     try {
-      if (this.sound) {
-        return await this.sound.getStatusAsync();
-      }
-      return null;
+      return await this.player.getStatusAsync();
     } catch (error) {
       console.error('Get status error:', error);
       return null;
     }
   }
 
-  setStatusUpdateCallback(callback: (status: AVPlaybackStatus) => void) {
-    this.onStatusUpdate = callback;
+  addListener(callback: (status: PlaybackStatus) => void) {
+    this.player.addListener(callback);
   }
 
-  setTrackEndCallback(callback: () => void) {
-    this.onTrackEnd = callback;
+  async setActiveLockScreenControls(track: Track) {
+    try {
+      await this.player.setActiveLockScreenControlsAsync(true, {
+        metadata: {
+          title: track.title,
+          artist: track.artist,
+          album: track.album || '',
+          artwork: { uri: track.artwork, width: 512, height: 512 },
+        },
+        options: { color: '#FF0000' },
+      });
+    } catch (error) {
+      console.error('Error setting lock screen controls:', error);
+    }
   }
 
-  private handlePlaybackStatusUpdate(status: AVPlaybackStatus) {
-    if (this.onStatusUpdate) {
-      this.onStatusUpdate(status);
-    }
-
-    if (status.isLoaded && status.didJustFinish && this.onTrackEnd) {
-      this.onTrackEnd();
-    }
+  setOnRemoteControlEvent(callback: (event: any) => void) {
+    this.player.setOnRemoteControlEvent(callback);
   }
 
   getCurrentTrack(): Track | null {
@@ -155,10 +139,7 @@ export class AudioPlayerService {
 
   async cleanup() {
     try {
-      if (this.sound) {
-        await this.sound.unloadAsync();
-        this.sound = null;
-      }
+      await this.player.unloadAsync();
       this.currentTrack = null;
     } catch (error) {
       console.error('Cleanup error:', error);
