@@ -1,3 +1,8 @@
+export interface LyricsLine {
+  time: number;
+  text: string;
+}
+
 export interface Track {
   id: string;
   title: string;
@@ -6,6 +11,7 @@ export interface Track {
   thumbnail?: string;
   url?: string;
   videoId?: string;
+  lyrics?: LyricsLine[];
 }
 
 export interface Playlist {
