@@ -3,7 +3,7 @@ import axios from 'axios';
 export interface LyricsResult {
   lyrics: string;
   syncedLyrics?: string;
-  source: 'lrclib' | 'lyrics.ovh';
+  source: 'lrclib' | 'lyrics.ovh' | 'backend';
 }
 
 const normalizeTerm = (value: string) =>

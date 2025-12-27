@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -121,6 +121,22 @@ export default function NowPlayingScreen() {
     ]);
   };
 
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: currentTrack
+        ? () => (
+            <TouchableOpacity
+              onPress={() => openOptions(currentTrack)}
+              style={styles.headerIconButton}
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            >
+              <Ionicons name="ellipsis-vertical" size={22} color="#FFFFFF" />
+            </TouchableOpacity>
+          )
+        : undefined,
+    });
+  }, [currentTrack, navigation]);
+
   if (!currentTrack) {
     return (
       <View style={styles.emptyContainer}>
@@ -135,16 +151,6 @@ export default function NowPlayingScreen() {
 
   const content = (
     <View style={styles.content}>
-      <View style={styles.topBar}>
-        <TouchableOpacity
-          onPress={() => openOptions(currentTrack)}
-          style={styles.topBarButton}
-          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-        >
-          <Ionicons name="ellipsis-vertical" size={24} color="#FFFFFF" />
-        </TouchableOpacity>
-      </View>
-
       <View style={styles.artworkContainer}>
         {currentTrack.thumbnail ? (
           <Image source={{ uri: currentTrack.thumbnail }} style={styles.artwork} />
@@ -262,17 +268,12 @@ const styles = StyleSheet.create({
     color: '#AAAAAA',
     fontSize: 18,
   },
-  topBar: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    alignItems: 'center',
-    height: 44,
-  },
-  topBarButton: {
+  headerIconButton: {
     width: 44,
     height: 44,
     justifyContent: 'center',
     alignItems: 'center',
+    marginRight: 6,
   },
   artworkContainer: {
     alignItems: 'center',

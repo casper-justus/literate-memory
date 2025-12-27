@@ -1,4 +1,5 @@
 const ytdlpService = require('../services/ytdlpService');
+const lyricsService = require('../services/lyricsService');
 
 class MusicController {
   async search(req, res) {
@@ -90,6 +91,43 @@ class MusicController {
       res.redirect(url);
     } catch (error) {
       console.error('Stream audio controller error:', error);
+      res.status(500).json({ error: error.message });
+    }
+  }
+
+  async getPlaylist(req, res) {
+    try {
+      const { playlistId } = req.params;
+
+      if (!playlistId) {
+        return res.status(400).json({ error: 'Playlist ID is required' });
+      }
+
+      const playlist = await ytdlpService.getPlaylist(playlistId);
+      res.json(playlist);
+    } catch (error) {
+      console.error('Get playlist controller error:', error);
+      res.status(500).json({ error: error.message });
+    }
+  }
+
+  async getLyrics(req, res) {
+    try {
+      const { artist, title } = req.query;
+
+      if (!artist || !title) {
+        return res.status(400).json({ error: 'artist and title query parameters are required' });
+      }
+
+      const lyrics = await lyricsService.getLyrics(artist, title);
+
+      if (!lyrics) {
+        return res.status(404).json({ error: 'Lyrics not found' });
+      }
+
+      res.json(lyrics);
+    } catch (error) {
+      console.error('Get lyrics controller error:', error);
       res.status(500).json({ error: error.message });
     }
   }

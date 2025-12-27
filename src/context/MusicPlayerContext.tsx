@@ -305,10 +305,18 @@ export function MusicPlayerProvider({ children }: { children: ReactNode }) {
     []
   );
 
-  const getYouTubePlaylist = useCallback(async (playlistId: string): Promise<YouTubePlaylist | null> => {
-    if (!playlistId.trim()) return null;
-    return await YouTubeService.getPlaylist(playlistId);
-  }, []);
+  const getYouTubePlaylist = useCallback(
+    async (playlistId: string): Promise<YouTubePlaylist | null> => {
+      if (!playlistId.trim()) return null;
+
+      if (backendService) {
+        return await backendService.getPlaylist(playlistId);
+      }
+
+      return await YouTubeService.getPlaylist(playlistId);
+    },
+    [backendService]
+  );
 
   const searchMusic = useCallback(async (query: string): Promise<SearchResult[]> => {
     try {

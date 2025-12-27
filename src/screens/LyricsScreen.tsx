@@ -17,7 +17,7 @@ type LyricsRouteProp = RouteProp<RootStackParamList, 'Lyrics'>;
 
 export default function LyricsScreen() {
   const route = useRoute<LyricsRouteProp>();
-  const { playerState } = useMusicPlayer();
+  const { playerState, backendService } = useMusicPlayer();
 
   const track: Track | null = useMemo(() => {
     return route.params?.track || playerState.currentTrack || null;
@@ -35,12 +35,20 @@ export default function LyricsScreen() {
       setResult(null);
 
       try {
-        const lyrics = await fetchLyrics(track.artist, track.title);
+        const lyrics = backendService
+          ? await backendService.getLyrics(track.artist, track.title)
+          : await fetchLyrics(track.artist, track.title);
+
         if (!lyrics) {
           setError('No lyrics found for this track.');
           return;
         }
-        setResult(lyrics);
+
+        setResult({
+          lyrics: lyrics.lyrics,
+          syncedLyrics: lyrics.syncedLyrics,
+          source: lyrics.source,
+        });
       } catch (e) {
         console.error('Lyrics fetch error:', e);
         setError('Failed to load lyrics.');
@@ -50,7 +58,7 @@ export default function LyricsScreen() {
     };
 
     load();
-  }, [track]);
+  }, [backendService, track]);
 
   if (!track) {
     return (
