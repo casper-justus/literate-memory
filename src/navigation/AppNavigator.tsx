@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -44,44 +44,44 @@ function TabNavigator() {
           },
         }}
       >
-        <Tab.Screen 
-          name="Home" 
+        <Tab.Screen
+          name="Home"
           component={HomeScreen}
-          options={{ 
+          options={{
             title: 'Home',
-            tabBarIcon: ({ color }) => <span style={{ fontSize: 24 }}>🏠</span>,
+            tabBarIcon: ({ color }) => <Text style={{ fontSize: 24 }}>🏠</Text>,
           }}
         />
-        <Tab.Screen 
-          name="MusicPlayer" 
+        <Tab.Screen
+          name="MusicPlayer"
           component={MusicPlayerScreen}
-          options={{ 
+          options={{
             title: 'Music',
-            tabBarIcon: ({ color }) => <span style={{ fontSize: 24 }}>🎵</span>,
+            tabBarIcon: ({ color }) => <Text style={{ fontSize: 24 }}>🎵</Text>,
           }}
         />
-        <Tab.Screen 
-          name="Search" 
+        <Tab.Screen
+          name="Search"
           component={SearchScreen}
-          options={{ 
+          options={{
             title: 'Search',
-            tabBarIcon: ({ color }) => <span style={{ fontSize: 24 }}>🔍</span>,
+            tabBarIcon: ({ color }) => <Text style={{ fontSize: 24 }}>🔍</Text>,
           }}
         />
-        <Tab.Screen 
-          name="Playlists" 
+        <Tab.Screen
+          name="Playlists"
           component={PlaylistsScreen}
-          options={{ 
+          options={{
             title: 'Playlists',
-            tabBarIcon: ({ color }) => <span style={{ fontSize: 24 }}>📋</span>,
+            tabBarIcon: ({ color }) => <Text style={{ fontSize: 24 }}>📋</Text>,
           }}
         />
-        <Tab.Screen 
-          name="Settings" 
+        <Tab.Screen
+          name="Settings"
           component={SettingsScreen}
-          options={{ 
+          options={{
             title: 'Settings',
-            tabBarIcon: ({ color }) => <span style={{ fontSize: 24 }}>⚙️</span>,
+            tabBarIcon: ({ color }) => <Text style={{ fontSize: 24 }}>⚙️</Text>,
           }}
         />
       </Tab.Navigator>
