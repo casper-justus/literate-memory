@@ -1,0 +1,36 @@
+npm warn Unknown env config "python". This will stop working in the next major version of npm.
+
+> music-player-backend@1.0.0 start
+> node src/index.js
+
+
+🎵 Music Player API Server
+🚀 Server running on http://localhost:3000
+📡 API endpoints available at http://localhost:3000/api/music
+
+Press Ctrl+C to stop
+
+2025-12-13T12:05:45.024Z - GET /api/music/health
+2025-12-13T12:07:53.857Z - GET /api/music/health
+2025-12-13T12:09:30.187Z - GET /api/music/search
+Search error: Error: Command failed: /home/engine/.local/bin/yt-dlp "ytsearch2:test" --dump-json --skip-download
+/bin/sh: 1: /home/engine/.local/bin/yt-dlp: not found
+
+    at genericNodeError (node:internal/errors:984:15)
+    at wrappedFn (node:internal/errors:538:14)
+    at ChildProcess.exithandler (node:child_process:422:12)
+    at ChildProcess.emit (node:events:524:28)
+    at maybeClose (node:internal/child_process:1104:16)
+    at Socket.<anonymous> (node:internal/child_process:456:11)
+    at Socket.emit (node:events:524:28)
+    at Pipe.<anonymous> (node:net:343:12) {
+  code: 127,
+  killed: false,
+  signal: null,
+  cmd: '/home/engine/.local/bin/yt-dlp "ytsearch2:test" --dump-json --skip-download',
+  stdout: '',
+  stderr: '/bin/sh: 1: /home/engine/.local/bin/yt-dlp: not found\n'
+}
+Search controller error: Error: Failed to search videos
+    at YtDlpService.search (/home/engine/project/backend/src/services/ytdlpService.js:49:13)
+    at async search (/home/engine/project/backend/src/controllers/musicController.js:12:23)

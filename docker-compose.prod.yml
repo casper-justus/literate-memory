@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  music-player:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: music-player-production
+    restart: unless-stopped
+    ports:
+      - "3000:3000"      # Backend API
+      - "19006:19006"    # Expo Web (if enabled)
+      - "4040:4040"      # ngrok dashboard
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - YTDLP_PATH=/usr/local/bin/yt-dlp
+      - CACHE_DIR=/app/backend/cache
+      - DOWNLOADS_DIR=/app/backend/downloads
+      - NGROK_AUTHTOKEN=${NGROK_AUTHTOKEN:-}
+    volumes:
+      - music-cache:/app/backend/cache
+      - music-downloads:/app/backend/downloads
+      - music-logs:/app/logs
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/music/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - music-network
+    security_opt:
+      - no-new-privileges:true
+    read_only: false
+    tmpfs:
+      - /tmp
+
+volumes:
+  music-cache:
+    driver: local
+  music-downloads:
+    driver: local
+  music-logs:
+    driver: local
+
+networks:
+  music-network:
+    driver: bridge
