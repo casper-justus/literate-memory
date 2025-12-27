@@ -6,10 +6,11 @@ const crypto = require('crypto');
 class DownloadService {
   constructor() {
     this.ytdlpPath = process.env.YTDLP_PATH || 'yt-dlp';
-    this.downloadsDir = process.env.DOWNLOADS_DIR || path.join(__dirname, '../../downloads');
+    this.downloadsDir =
+      process.env.DOWNLOADS_DIR || path.join(__dirname, '../../downloads');
     this.maxConcurrentDownloads = 3;
     this.activeDownloads = new Map();
-    
+
     this.ensureDownloadsDir();
   }
 
@@ -28,7 +29,7 @@ class DownloadService {
   async downloadTrack(videoId, options = {}) {
     const downloadId = this.generateDownloadId();
     const outputPath = path.join(this.downloadsDir, `${videoId}.%(ext)s`);
-    
+
     const downloadInfo = {
       id: downloadId,
       videoId,
@@ -37,15 +38,18 @@ class DownloadService {
       startTime: Date.now(),
       outputPath: null,
     };
-    
+
     this.activeDownloads.set(downloadId, downloadInfo);
 
     const ytdlpArgs = [
       `"https://youtube.com/watch?v=${videoId}"`,
       '-x',
-      '--audio-format', options.format || 'mp3',
-      '--audio-quality', options.quality || '0',
-      '--output', `"${outputPath}"`,
+      '--audio-format',
+      options.format || 'mp3',
+      '--audio-quality',
+      options.quality || '0',
+      '--output',
+      `"${outputPath}"`,
       '--no-playlist',
       '--embed-thumbnail',
       '--embed-metadata',
@@ -65,7 +69,7 @@ class DownloadService {
 
       process.stdout.on('data', (data) => {
         const output = data.toString();
-        
+
         // Parse progress
         const progressMatch = output.match(/(\d+\.?\d*)%/);
         if (progressMatch) {
@@ -109,7 +113,7 @@ class DownloadService {
   async downloadPlaylist(playlistId, options = {}) {
     const downloadId = this.generateDownloadId();
     const playlistDir = path.join(this.downloadsDir, `playlist_${playlistId}`);
-    
+
     await fs.mkdir(playlistDir, { recursive: true });
 
     const downloadInfo = {
@@ -123,16 +127,16 @@ class DownloadService {
       tracks: [],
       startTime: Date.now(),
     };
-    
+
     this.activeDownloads.set(downloadId, downloadInfo);
 
     // First, get playlist info
     const infoCommand = `${this.ytdlpPath} --flat-playlist --dump-json "https://youtube.com/playlist?list=${playlistId}"`;
-    
+
     try {
       const trackIds = await this.getPlaylistTracks(infoCommand);
       downloadInfo.totalTracks = trackIds.length;
-      downloadInfo.tracks = trackIds.map(id => ({ id, status: 'pending' }));
+      downloadInfo.tracks = trackIds.map((id) => ({ id, status: 'pending' }));
 
       // Download tracks with concurrency limit
       const chunks = [];
@@ -144,31 +148,38 @@ class DownloadService {
         await Promise.allSettled(
           chunk.map(async (videoId) => {
             try {
-              const trackInfo = downloadInfo.tracks.find(t => t.id === videoId);
+              const trackInfo = downloadInfo.tracks.find(
+                (t) => t.id === videoId
+              );
               trackInfo.status = 'downloading';
-              
+
               await this.downloadTrack(videoId, {
                 ...options,
                 outputPath: path.join(playlistDir, `${videoId}.%(ext)s`),
               });
-              
+
               trackInfo.status = 'completed';
               downloadInfo.completedTracks++;
             } catch (error) {
-              const trackInfo = downloadInfo.tracks.find(t => t.id === videoId);
+              const trackInfo = downloadInfo.tracks.find(
+                (t) => t.id === videoId
+              );
               trackInfo.status = 'failed';
               trackInfo.error = error.message;
               downloadInfo.failedTracks++;
             }
-            
-            downloadInfo.progress = (downloadInfo.completedTracks + downloadInfo.failedTracks) / downloadInfo.totalTracks * 100;
+
+            downloadInfo.progress =
+              ((downloadInfo.completedTracks + downloadInfo.failedTracks) /
+                downloadInfo.totalTracks) *
+              100;
           })
         );
       }
 
       downloadInfo.status = 'completed';
       downloadInfo.endTime = Date.now();
-      
+
       return downloadInfo;
     } catch (error) {
       downloadInfo.status = 'failed';
@@ -179,32 +190,36 @@ class DownloadService {
 
   getPlaylistTracks(command) {
     return new Promise((resolve, reject) => {
-      exec(command, { maxBuffer: 1024 * 1024 * 10 }, (error, stdout, stderr) => {
-        if (error) {
-          reject(error);
-          return;
-        }
+      exec(
+        command,
+        { maxBuffer: 1024 * 1024 * 10 },
+        (error, stdout, stderr) => {
+          if (error) {
+            reject(error);
+            return;
+          }
 
-        try {
-          const tracks = stdout
-            .trim()
-            .split('\n')
-            .filter(line => line.trim())
-            .map(line => {
-              try {
-                const data = JSON.parse(line);
-                return data.id || data.url?.split('v=')[1]?.split('&')[0];
-              } catch {
-                return null;
-              }
-            })
-            .filter(id => id);
-          
-          resolve(tracks);
-        } catch (error) {
-          reject(error);
+          try {
+            const tracks = stdout
+              .trim()
+              .split('\n')
+              .filter((line) => line.trim())
+              .map((line) => {
+                try {
+                  const data = JSON.parse(line);
+                  return data.id || data.url?.split('v=')[1]?.split('&')[0];
+                } catch {
+                  return null;
+                }
+              })
+              .filter((id) => id);
+
+            resolve(tracks);
+          } catch (error) {
+            reject(error);
+          }
         }
-      });
+      );
     });
   }
 

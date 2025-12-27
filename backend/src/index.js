@@ -56,7 +56,9 @@ app.use((req, res) => {
 app.listen(PORT, () => {
   console.log(`\n🎵 Music Player API Server`);
   console.log(`🚀 Server running on http://localhost:${PORT}`);
-  console.log(`📡 API endpoints available at http://localhost:${PORT}/api/music`);
+  console.log(
+    `📡 API endpoints available at http://localhost:${PORT}/api/music`
+  );
   console.log(`\nPress Ctrl+C to stop\n`);
 });
 

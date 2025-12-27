@@ -17,7 +17,10 @@ import { Track, YouTubePlaylist } from '../types/music';
 import { useMusicPlayer } from '../context/MusicPlayerContext';
 import { Button } from '../components';
 
-type YouTubePlaylistRouteProp = RouteProp<RootStackParamList, 'YouTubePlaylist'>;
+type YouTubePlaylistRouteProp = RouteProp<
+  RootStackParamList,
+  'YouTubePlaylist'
+>;
 
 type NavigationProp = StackNavigationProp<RootStackParamList>;
 
@@ -31,7 +34,10 @@ export default function YouTubePlaylistScreen() {
   const [loading, setLoading] = useState(false);
   const [playlist, setPlaylist] = useState<YouTubePlaylist | null>(null);
 
-  const playlistTitle = useMemo(() => route.params?.title || playlist?.title, [playlist?.title, route.params]);
+  const playlistTitle = useMemo(
+    () => route.params?.title || playlist?.title,
+    [playlist?.title, route.params]
+  );
 
   useEffect(() => {
     if (playlistTitle) {

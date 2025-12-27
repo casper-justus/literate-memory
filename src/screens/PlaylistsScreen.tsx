@@ -19,7 +19,8 @@ type NavigationProp = StackNavigationProp<RootStackParamList>;
 
 export default function PlaylistsScreen() {
   const navigation = useNavigation<NavigationProp>();
-  const { playlists, createPlaylist, deletePlaylist, playPlaylist } = useMusicPlayer();
+  const { playlists, createPlaylist, deletePlaylist, playPlaylist } =
+    useMusicPlayer();
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [newPlaylistName, setNewPlaylistName] = useState('');
 
@@ -64,7 +65,8 @@ export default function PlaylistsScreen() {
       { text: 'Play', onPress: () => handlePlayPlaylist(playlist) },
       {
         text: 'View Details',
-        onPress: () => navigation.navigate('PlaylistDetails', { playlistId: playlist.id }),
+        onPress: () =>
+          navigation.navigate('PlaylistDetails', { playlistId: playlist.id }),
       },
       {
         text: 'Delete',
@@ -78,7 +80,9 @@ export default function PlaylistsScreen() {
   const renderPlaylistItem = ({ item }: { item: Playlist }) => (
     <Card>
       <TouchableOpacity
-        onPress={() => navigation.navigate('PlaylistDetails', { playlistId: item.id })}
+        onPress={() =>
+          navigation.navigate('PlaylistDetails', { playlistId: item.id })
+        }
         activeOpacity={0.85}
       >
         <View style={styles.playlistItem}>
@@ -88,7 +92,8 @@ export default function PlaylistsScreen() {
           <View style={styles.playlistInfo}>
             <Text style={styles.playlistName}>{item.name}</Text>
             <Text style={styles.playlistCount}>
-              {item.tracks.length} {item.tracks.length === 1 ? 'track' : 'tracks'}
+              {item.tracks.length}{' '}
+              {item.tracks.length === 1 ? 'track' : 'tracks'}
             </Text>
           </View>
 

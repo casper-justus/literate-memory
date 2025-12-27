@@ -29,16 +29,19 @@ class LyricsService {
   }
 
   /**
-   * Fetches lyrics for a track. 
+   * Fetches lyrics for a track.
    * In a real app, this would call an external API.
    * For this demo, we'll return some mock synced lyrics.
    */
-  async getLyrics(title: string, artist: string): Promise<LyricsLine[] | undefined> {
+  async getLyrics(
+    title: string,
+    artist: string
+  ): Promise<LyricsLine[] | undefined> {
     // Mocking lyrics fetching
     // In a real scenario, you might use an API like Musixmatch or LRCLIB
-    
+
     // For demo purposes, we'll return synced lyrics tailored to the track title
-    
+
     const mockLRC = `
 [00:02.00]${title}
 [00:05.00]Performed by ${artist}

@@ -69,7 +69,9 @@ export default function LyricsScreen() {
     );
   }
 
-  const backgroundSource = track.thumbnail ? { uri: track.thumbnail } : undefined;
+  const backgroundSource = track.thumbnail
+    ? { uri: track.thumbnail }
+    : undefined;
 
   const content = (
     <View style={styles.content}>

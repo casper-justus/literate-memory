@@ -15,18 +15,17 @@ import { useMusicPlayer } from '../context/MusicPlayerContext';
 import { Track } from '../types/music';
 import { Button } from '../components';
 
-type PlaylistDetailsRouteProp = RouteProp<RootStackParamList, 'PlaylistDetails'>;
+type PlaylistDetailsRouteProp = RouteProp<
+  RootStackParamList,
+  'PlaylistDetails'
+>;
 
 export default function PlaylistDetailsScreen() {
   const route = useRoute<PlaylistDetailsRouteProp>();
   const { playlistId } = route.params;
-  
-  const {
-    playlists,
-    removeTrackFromPlaylist,
-    playPlaylist,
-    playQueue,
-  } = useMusicPlayer();
+
+  const { playlists, removeTrackFromPlaylist, playPlaylist, playQueue } =
+    useMusicPlayer();
 
   const playlist = playlists.find((p) => p.id === playlistId);
 
@@ -43,18 +42,14 @@ export default function PlaylistDetailsScreen() {
   };
 
   const handleRemoveTrack = (trackId: string, trackTitle: string) => {
-    Alert.alert(
-      'Remove Track',
-      `Remove "${trackTitle}" from playlist?`,
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Remove',
-          style: 'destructive',
-          onPress: () => removeTrackFromPlaylist(playlistId, trackId),
-        },
-      ]
-    );
+    Alert.alert('Remove Track', `Remove "${trackTitle}" from playlist?`, [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Remove',
+        style: 'destructive',
+        onPress: () => removeTrackFromPlaylist(playlistId, trackId),
+      },
+    ]);
   };
 
   const handlePlayAll = () => {
@@ -118,7 +113,8 @@ export default function PlaylistDetailsScreen() {
           <View style={styles.playlistHeaderInfo}>
             <Text style={styles.playlistName}>{playlist.name}</Text>
             <Text style={styles.playlistMeta}>
-              {playlist.tracks.length} {playlist.tracks.length === 1 ? 'track' : 'tracks'}
+              {playlist.tracks.length}{' '}
+              {playlist.tracks.length === 1 ? 'track' : 'tracks'}
             </Text>
           </View>
         </View>

@@ -25,9 +25,9 @@ class ThemeService {
     try {
       // For web/Expo, we'd use a library like 'color-thief-react'
       // For now, we'll use a simple approach with dominant color extraction
-      
+
       const colors = await this.getDominantColors(imageUrl);
-      
+
       if (colors && colors.length > 0) {
         return this.generateThemeFromColors(colors);
       }
@@ -42,7 +42,7 @@ class ThemeService {
   private async getDominantColors(imageUrl: string): Promise<string[]> {
     // This is a simplified version
     // In production, you'd use a library like 'react-native-palette' or 'color-thief'
-    
+
     return new Promise((resolve) => {
       // For now, return default colors
       // You would integrate with a proper color extraction library here

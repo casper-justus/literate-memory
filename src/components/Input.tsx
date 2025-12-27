@@ -25,13 +25,13 @@ export default function Input({
     <View style={[styles.container, containerStyle]}>
       {label && <Text style={styles.label}>{label}</Text>}
       <TextInput
-        style={[
-          styles.input,
-          error && styles.inputError,
-          style,
-        ]}
+        style={[styles.input, error && styles.inputError, style]}
         placeholderTextColor="#999999"
         {...props}
+        accessibilityLabel={label}
+        accessibilityHint={props.placeholder}
+        accessibilityInvalid={!!error}
+        accessibilityErrorMessage={error}
       />
       {error && <Text style={styles.errorText}>{error}</Text>}
     </View>

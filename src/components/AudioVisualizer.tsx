@@ -1,7 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { View, StyleSheet, Dimensions } from 'react-native';
 import Svg, { Rect, Path, Circle, Line } from 'react-native-svg';
-import AudioVisualizerService, { AudioData } from '../services/AudioVisualizerService';
+import AudioVisualizerService, {
+  AudioData,
+} from '../services/AudioVisualizerService';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -30,7 +32,7 @@ export default function AudioVisualizer({
     if (!isPlaying) return;
 
     AudioVisualizerService.initialize();
-    
+
     const unsubscribe = AudioVisualizerService.subscribe((data) => {
       setAudioData(data);
     });
@@ -74,7 +76,7 @@ export default function AudioVisualizer({
     const stepX = (SCREEN_WIDTH - 40) / points;
 
     let pathData = `M 0 ${height / 2}`;
-    
+
     wave.forEach((value, index) => {
       const x = index * stepX;
       const y = value * height;
@@ -96,7 +98,10 @@ export default function AudioVisualizer({
 
   const renderCircular = () => {
     const segments = 64;
-    const circular = AudioVisualizerService.getCircularData(audioData, segments);
+    const circular = AudioVisualizerService.getCircularData(
+      audioData,
+      segments
+    );
     const centerX = (SCREEN_WIDTH - 40) / 2;
     const centerY = height / 2;
     const radius = Math.min(centerX, centerY) * 0.6;
@@ -106,7 +111,7 @@ export default function AudioVisualizer({
         {circular.map((value, index) => {
           const angle = (index / segments) * 2 * Math.PI;
           const length = radius + value * radius * 0.5;
-          
+
           const x1 = centerX + Math.cos(angle) * radius;
           const y1 = centerY + Math.sin(angle) * radius;
           const x2 = centerX + Math.cos(angle) * length;
@@ -190,9 +195,7 @@ export default function AudioVisualizer({
   };
 
   return (
-    <View style={[styles.container, { height }]}>
-      {renderVisualizer()}
-    </View>
+    <View style={[styles.container, { height }]}>{renderVisualizer()}</View>
   );
 }
 

@@ -1,8 +1,8 @@
 import axios from 'axios';
 import { SearchResult, Track, YouTubePlaylist } from '../types/music';
 
-const API_BASE = __DEV__ 
-  ? 'http://localhost:3000/api/music' 
+const API_BASE = __DEV__
+  ? 'http://localhost:3000/api/music'
   : 'https://your-backend-url.com/api/music';
 
 class BackendMusicService {
@@ -80,9 +80,12 @@ class BackendMusicService {
 
   async getPlaylist(playlistId: string): Promise<YouTubePlaylist | null> {
     try {
-      const response = await axios.get(`${this.apiBase}/playlist/${playlistId}`, {
-        timeout: 30000,
-      });
+      const response = await axios.get(
+        `${this.apiBase}/playlist/${playlistId}`,
+        {
+          timeout: 30000,
+        }
+      );
 
       const data = response.data;
       const tracks: Track[] = (data.tracks || []).map((t: any) => ({
@@ -100,7 +103,8 @@ class BackendMusicService {
         author: data.author,
         description: data.description,
         thumbnail: data.thumbnail,
-        videoCount: typeof data.videoCount === 'number' ? data.videoCount : tracks.length,
+        videoCount:
+          typeof data.videoCount === 'number' ? data.videoCount : tracks.length,
         tracks,
       };
     } catch (error) {
@@ -112,7 +116,11 @@ class BackendMusicService {
   async getLyrics(
     artist: string,
     title: string
-  ): Promise<{ lyrics: string; syncedLyrics?: string; source: 'lrclib' | 'lyrics.ovh' | 'backend' } | null> {
+  ): Promise<{
+    lyrics: string;
+    syncedLyrics?: string;
+    source: 'lrclib' | 'lyrics.ovh' | 'backend';
+  } | null> {
     try {
       const response = await axios.get(`${this.apiBase}/lyrics`, {
         params: { artist, title },
@@ -126,7 +134,9 @@ class BackendMusicService {
 
       const rawSource = response.data?.source;
       const source: 'lrclib' | 'lyrics.ovh' | 'backend' =
-        rawSource === 'lrclib' || rawSource === 'lyrics.ovh' ? rawSource : 'backend';
+        rawSource === 'lrclib' || rawSource === 'lyrics.ovh'
+          ? rawSource
+          : 'backend';
 
       return {
         lyrics: lyrics.trim(),

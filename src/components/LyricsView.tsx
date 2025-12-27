@@ -17,13 +17,20 @@ interface LyricsViewProps {
 
 const { height } = Dimensions.get('window');
 
-export default function LyricsView({ lyrics, currentPosition, onSeek }: LyricsViewProps) {
+export default function LyricsView({
+  lyrics,
+  currentPosition,
+  onSeek,
+}: LyricsViewProps) {
   const flatListRef = useRef<FlatList>(null);
 
   // Find the index of the current active line
   const activeLineIndex = lyrics.findIndex((line, index) => {
     const nextLine = lyrics[index + 1];
-    return currentPosition >= line.time && (!nextLine || currentPosition < nextLine.time);
+    return (
+      currentPosition >= line.time &&
+      (!nextLine || currentPosition < nextLine.time)
+    );
   });
 
   useEffect(() => {

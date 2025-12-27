@@ -1,5 +1,11 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { Ionicons } from '@expo/vector-icons';
@@ -17,7 +23,7 @@ export default function MusicPlayerScreen() {
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       <Card style={styles.card}>
         <Text style={styles.sectionTitle}>Quick Access</Text>
-        
+
         <TouchableOpacity
           style={styles.menuItem}
           onPress={() => navigation.navigate('Search')}
@@ -27,7 +33,9 @@ export default function MusicPlayerScreen() {
           </View>
           <View style={styles.menuInfo}>
             <Text style={styles.menuTitle}>Search Music</Text>
-            <Text style={styles.menuSubtitle}>Find and play your favorite tracks</Text>
+            <Text style={styles.menuSubtitle}>
+              Find and play your favorite tracks
+            </Text>
           </View>
         </TouchableOpacity>
 
@@ -40,7 +48,9 @@ export default function MusicPlayerScreen() {
           </View>
           <View style={styles.menuInfo}>
             <Text style={styles.menuTitle}>My Playlists</Text>
-            <Text style={styles.menuSubtitle}>{playlists.length} playlists</Text>
+            <Text style={styles.menuSubtitle}>
+              {playlists.length} playlists
+            </Text>
           </View>
         </TouchableOpacity>
 
@@ -54,7 +64,9 @@ export default function MusicPlayerScreen() {
             </View>
             <View style={styles.menuInfo}>
               <Text style={styles.menuTitle}>Now Playing</Text>
-              <Text style={styles.menuSubtitle}>{playerState.currentTrack.title}</Text>
+              <Text style={styles.menuSubtitle}>
+                {playerState.currentTrack.title}
+              </Text>
             </View>
           </TouchableOpacity>
         )}
@@ -65,7 +77,8 @@ export default function MusicPlayerScreen() {
         {playerState.queue.length > 0 ? (
           <View>
             <Text style={styles.queueText}>
-              {playerState.queue.length} {playerState.queue.length === 1 ? 'track' : 'tracks'} in queue
+              {playerState.queue.length}{' '}
+              {playerState.queue.length === 1 ? 'track' : 'tracks'} in queue
             </Text>
             {playerState.queue.slice(0, 3).map((track, index) => (
               <View key={track.id} style={styles.queueItem}>
@@ -90,26 +103,48 @@ export default function MusicPlayerScreen() {
         <Text style={styles.sectionTitle}>Features</Text>
         <View style={styles.featuresGrid}>
           <View style={styles.feature}>
-            <Ionicons name="logo-youtube" size={32} color="#FFFFFF" style={styles.featureIcon} />
+            <Ionicons
+              name="logo-youtube"
+              size={32}
+              color="#FFFFFF"
+              style={styles.featureIcon}
+            />
             <Text style={styles.featureText}>YouTube Music</Text>
           </View>
           <View style={styles.feature}>
-            <Ionicons name="phone-portrait" size={32} color="#FFFFFF" style={styles.featureIcon} />
+            <Ionicons
+              name="phone-portrait"
+              size={32}
+              color="#FFFFFF"
+              style={styles.featureIcon}
+            />
             <Text style={styles.featureText}>Native Playback</Text>
           </View>
           <View style={styles.feature}>
-            <Ionicons name="repeat" size={32} color="#FFFFFF" style={styles.featureIcon} />
+            <Ionicons
+              name="repeat"
+              size={32}
+              color="#FFFFFF"
+              style={styles.featureIcon}
+            />
             <Text style={styles.featureText}>Repeat & Shuffle</Text>
           </View>
           <View style={styles.feature}>
-            <Ionicons name="list" size={32} color="#FFFFFF" style={styles.featureIcon} />
+            <Ionicons
+              name="list"
+              size={32}
+              color="#FFFFFF"
+              style={styles.featureIcon}
+            />
             <Text style={styles.featureText}>Playlists</Text>
           </View>
         </View>
       </Card>
 
       <View style={styles.footer}>
-        <Text style={styles.footerText}>Music Player with YouTube Integration</Text>
+        <Text style={styles.footerText}>
+          Music Player with YouTube Integration
+        </Text>
       </View>
     </ScrollView>
   );

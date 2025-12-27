@@ -10,7 +10,9 @@ import {
 } from 'react-native';
 import { Card, Input, Button } from '../components';
 import { useStorage } from '../hooks/useStorage';
-import BackendMusicService, { BackendMusicService as BackendMusicServiceClass } from '../services/BackendMusicService';
+import BackendMusicService, {
+  BackendMusicService as BackendMusicServiceClass,
+} from '../services/BackendMusicService';
 
 interface AppSettings {
   useBackendApi: boolean;
@@ -21,19 +23,19 @@ interface AppSettings {
 }
 
 export default function SettingsScreen() {
-  const { storedValue: settings, setValue: setSettings } = useStorage<AppSettings>(
-    'appSettings',
-    {
+  const { storedValue: settings, setValue: setSettings } =
+    useStorage<AppSettings>('appSettings', {
       useBackendApi: false,
       backendUrl: 'http://localhost:3000/api/music',
       audioQuality: 'high',
       autoPlay: true,
       showNotifications: true,
-    }
-  );
+    });
 
   const [localSettings, setLocalSettings] = useState(settings);
-  const [backendStatus, setBackendStatus] = useState<'unknown' | 'online' | 'offline'>('unknown');
+  const [backendStatus, setBackendStatus] = useState<
+    'unknown' | 'online' | 'offline'
+  >('unknown');
   const [ytdlpVersion, setYtdlpVersion] = useState<string>('');
 
   useEffect(() => {
@@ -44,7 +46,7 @@ export default function SettingsScreen() {
     try {
       const service = new BackendMusicServiceClass(localSettings.backendUrl);
       const health = await service.checkHealth();
-      
+
       if (health.status === 'ok') {
         setBackendStatus('online');
         setYtdlpVersion(health.ytdlp.version || 'Unknown');
@@ -88,17 +90,23 @@ export default function SettingsScreen() {
 
   const getStatusColor = () => {
     switch (backendStatus) {
-      case 'online': return '#4CAF50';
-      case 'offline': return '#F44336';
-      default: return '#FFC107';
+      case 'online':
+        return '#4CAF50';
+      case 'offline':
+        return '#F44336';
+      default:
+        return '#FFC107';
     }
   };
 
   const getStatusText = () => {
     switch (backendStatus) {
-      case 'online': return 'Online';
-      case 'offline': return 'Offline';
-      default: return 'Checking...';
+      case 'online':
+        return 'Online';
+      case 'offline':
+        return 'Offline';
+      default:
+        return 'Checking...';
     }
   };
 
@@ -106,7 +114,7 @@ export default function SettingsScreen() {
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       <Card style={styles.card}>
         <Text style={styles.sectionTitle}>🎵 Music Backend</Text>
-        
+
         <View style={styles.settingRow}>
           <View style={styles.settingInfo}>
             <Text style={styles.settingLabel}>Use Backend API (yt-dlp)</Text>
@@ -139,7 +147,12 @@ export default function SettingsScreen() {
 
             <View style={styles.statusContainer}>
               <Text style={styles.statusLabel}>Backend Status:</Text>
-              <View style={[styles.statusBadge, { backgroundColor: getStatusColor() }]}>
+              <View
+                style={[
+                  styles.statusBadge,
+                  { backgroundColor: getStatusColor() },
+                ]}
+              >
                 <Text style={styles.statusText}>{getStatusText()}</Text>
               </View>
             </View>
@@ -155,7 +168,8 @@ export default function SettingsScreen() {
             {backendStatus === 'offline' && (
               <View style={[styles.infoBox, styles.errorBox]}>
                 <Text style={styles.errorText}>
-                  ⚠️ Backend is offline. Make sure the backend server is running.
+                  ⚠️ Backend is offline. Make sure the backend server is
+                  running.
                 </Text>
                 <Text style={styles.errorSubtext}>
                   Run: cd backend && npm start
@@ -175,7 +189,7 @@ export default function SettingsScreen() {
 
       <Card style={styles.card}>
         <Text style={styles.sectionTitle}>🎚️ Playback</Text>
-        
+
         <View style={styles.settingRow}>
           <View style={styles.settingInfo}>
             <Text style={styles.settingLabel}>Auto Play</Text>
@@ -201,16 +215,21 @@ export default function SettingsScreen() {
               key={quality}
               style={[
                 styles.qualityButton,
-                localSettings.audioQuality === quality && styles.qualityButtonActive,
+                localSettings.audioQuality === quality &&
+                  styles.qualityButtonActive,
               ]}
               onPress={() =>
-                setLocalSettings({ ...localSettings, audioQuality: quality as any })
+                setLocalSettings({
+                  ...localSettings,
+                  audioQuality: quality as any,
+                })
               }
             >
               <Text
                 style={[
                   styles.qualityButtonText,
-                  localSettings.audioQuality === quality && styles.qualityButtonTextActive,
+                  localSettings.audioQuality === quality &&
+                    styles.qualityButtonTextActive,
                 ]}
               >
                 {quality.toUpperCase()}
@@ -222,7 +241,7 @@ export default function SettingsScreen() {
 
       <Card style={styles.card}>
         <Text style={styles.sectionTitle}>🔔 Notifications</Text>
-        
+
         <View style={styles.settingRow}>
           <View style={styles.settingInfo}>
             <Text style={styles.settingLabel}>Show Notifications</Text>

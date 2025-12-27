@@ -13,7 +13,11 @@ import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { Input } from '../components';
-import { SearchResult, Track, YouTubePlaylistSearchResult } from '../types/music';
+import {
+  SearchResult,
+  Track,
+  YouTubePlaylistSearchResult,
+} from '../types/music';
 import { RootStackParamList } from '../types/navigation';
 import { useMusicPlayer } from '../context/MusicPlayerContext';
 
@@ -198,12 +202,13 @@ export default function SearchScreen() {
   const openPlaylistOptions = (item: YouTubePlaylistSearchResult) => {
     Alert.alert(item.title, 'Choose action', [
       { text: 'Open', onPress: () => handleOpenPlaylist(item) },
-      { text: 'Play', onPress: () => handlePlayYouTubePlaylist(item.playlistId) },
+      {
+        text: 'Play',
+        onPress: () => handlePlayYouTubePlaylist(item.playlistId),
+      },
       { text: 'Cancel', style: 'cancel' },
     ]);
   };
-
-
 
   useEffect(() => {
     loadTrending();
@@ -244,7 +249,11 @@ export default function SearchScreen() {
     </TouchableOpacity>
   );
 
-  const renderPlaylistItem = ({ item }: { item: YouTubePlaylistSearchResult }) => (
+  const renderPlaylistItem = ({
+    item,
+  }: {
+    item: YouTubePlaylistSearchResult;
+  }) => (
     <TouchableOpacity
       style={styles.resultItem}
       onPress={() => handleOpenPlaylist(item)}
@@ -285,7 +294,11 @@ export default function SearchScreen() {
     <View style={styles.container}>
       <View style={styles.searchContainer}>
         <Input
-          placeholder={mode === 'videos' ? 'Search for music...' : 'Search for playlists or paste a playlist URL...'}
+          placeholder={
+            mode === 'videos'
+              ? 'Search for music...'
+              : 'Search for playlists or paste a playlist URL...'
+          }
           value={query}
           onChangeText={setQuery}
           onSubmitEditing={handleSearch}
@@ -305,14 +318,27 @@ export default function SearchScreen() {
           ]}
           onPress={() => setMode('videos')}
         >
-          <Text style={[styles.modeText, mode === 'videos' && styles.modeTextActive]}>Videos</Text>
+          <Text
+            style={[
+              styles.modeText,
+              mode === 'videos' && styles.modeTextActive,
+            ]}
+          >
+            Videos
+          </Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={[styles.modeButton, mode === 'playlists' && styles.modeButtonActive]}
+          style={[
+            styles.modeButton,
+            mode === 'playlists' && styles.modeButtonActive,
+          ]}
           onPress={() => setMode('playlists')}
         >
           <Text
-            style={[styles.modeText, mode === 'playlists' && styles.modeTextActive]}
+            style={[
+              styles.modeText,
+              mode === 'playlists' && styles.modeTextActive,
+            ]}
           >
             Playlists
           </Text>
@@ -333,7 +359,9 @@ export default function SearchScreen() {
           ListEmptyComponent={
             <View style={styles.emptyContainer}>
               <Text style={styles.emptyText}>
-                {query ? 'No results found' : 'Search for music or browse trending'}
+                {query
+                  ? 'No results found'
+                  : 'Search for music or browse trending'}
               </Text>
             </View>
           }

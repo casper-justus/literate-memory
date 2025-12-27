@@ -1,11 +1,5 @@
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  Alert,
-} from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Alert } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../types/navigation';
 import { Button, Card, Input } from '../components';
@@ -28,14 +22,15 @@ interface UserProfile {
 }
 
 export default function ProfileScreen({ navigation }: Props) {
-  const { storedValue: profile, setValue: setProfile, loading } = useStorage<UserProfile>(
-    'userProfile',
-    {
-      username: 'Guest',
-      email: '',
-      bio: '',
-    }
-  );
+  const {
+    storedValue: profile,
+    setValue: setProfile,
+    loading,
+  } = useStorage<UserProfile>('userProfile', {
+    username: 'Guest',
+    email: '',
+    bio: '',
+  });
 
   const [username, setUsername] = useState(profile.username);
   const [email, setEmail] = useState(profile.email);
@@ -101,7 +96,7 @@ export default function ProfileScreen({ navigation }: Props) {
     <ScrollView style={styles.container}>
       <Card>
         <Text style={styles.title}>Edit Profile</Text>
-        
+
         <Input
           label="Username"
           placeholder="Enter your username"
@@ -133,10 +128,7 @@ export default function ProfileScreen({ navigation }: Props) {
           style={styles.bioInput}
         />
 
-        <Button
-          title="Save Profile"
-          onPress={handleSave}
-        />
+        <Button title="Save Profile" onPress={handleSave} />
 
         <Button
           title="Reset to Default"

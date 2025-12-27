@@ -25,16 +25,22 @@ class AudioVisualizerService {
       // Only initialize on web platform
       if (Platform.OS === 'web') {
         // @ts-ignore - Web Audio API
-        this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        this.audioContext = new (
+          window.AudioContext || window.webkitAudioContext
+        )();
         this.analyser = this.audioContext.createAnalyser();
-        
+
         // Configure analyser
         this.analyser.fftSize = 256;
         this.analyser.smoothingTimeConstant = 0.8;
 
         const bufferLength = this.analyser.frequencyBinCount;
-        this.dataArray = new Uint8Array(new ArrayBuffer(bufferLength)) as Uint8Array<ArrayBuffer>;
-        this.timeDataArray = new Uint8Array(new ArrayBuffer(bufferLength)) as Uint8Array<ArrayBuffer>;
+        this.dataArray = new Uint8Array(
+          new ArrayBuffer(bufferLength)
+        ) as Uint8Array<ArrayBuffer>;
+        this.timeDataArray = new Uint8Array(
+          new ArrayBuffer(bufferLength)
+        ) as Uint8Array<ArrayBuffer>;
 
         this.isInitialized = true;
         console.log('AudioVisualizerService initialized');
@@ -55,7 +61,7 @@ class AudioVisualizerService {
       const source = this.audioContext.createMediaElementSource(audioElement);
       source.connect(this.analyser);
       this.analyser.connect(this.audioContext.destination);
-      
+
       this.startVisualization();
     } catch (error) {
       console.error('Error connecting to audio element:', error);
@@ -73,7 +79,7 @@ class AudioVisualizerService {
 
       const frequencyData = Array.from(this.dataArray);
       const timeDomainData = Array.from(this.timeDataArray);
-      
+
       // Calculate volume
       const sum = frequencyData.reduce((a, b) => a + b, 0);
       const volume = sum / frequencyData.length / 255;
@@ -96,11 +102,13 @@ class AudioVisualizerService {
   private startNativeVisualization() {
     // For native platforms, generate mock data
     const update = () => {
-      const frequencyData = Array.from({ length: 128 }, () =>
-        Math.random() * 255
+      const frequencyData = Array.from(
+        { length: 128 },
+        () => Math.random() * 255
       );
-      const timeDomainData = Array.from({ length: 128 }, () =>
-        Math.random() * 255
+      const timeDomainData = Array.from(
+        { length: 128 },
+        () => Math.random() * 255
       );
       const volume = Math.random();
 
@@ -203,9 +211,7 @@ class AudioVisualizerService {
     const midEnd = Math.floor(length * 0.5);
 
     const low =
-      frequencyData.slice(0, lowEnd).reduce((a, b) => a + b, 0) /
-      lowEnd /
-      255;
+      frequencyData.slice(0, lowEnd).reduce((a, b) => a + b, 0) / lowEnd / 255;
     const mid =
       frequencyData.slice(lowEnd, midEnd).reduce((a, b) => a + b, 0) /
       (midEnd - lowEnd) /

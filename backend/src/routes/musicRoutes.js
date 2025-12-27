@@ -29,8 +29,14 @@ router.get('/lyrics', musicController.getLyrics);
 
 // Download endpoints
 router.post('/download/track/:videoId', downloadController.downloadTrack);
-router.post('/download/playlist/:playlistId', downloadController.downloadPlaylist);
-router.get('/download/status/:downloadId', downloadController.getDownloadStatus);
+router.post(
+  '/download/playlist/:playlistId',
+  downloadController.downloadPlaylist
+);
+router.get(
+  '/download/status/:downloadId',
+  downloadController.getDownloadStatus
+);
 router.get('/downloads', downloadController.getAllDownloads);
 router.delete('/download/:downloadId', downloadController.cancelDownload);
 
