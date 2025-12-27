@@ -9,6 +9,7 @@ import {
   ActivityIndicator,
   Alert,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { Input } from '../components';
 import { SearchResult, Track } from '../types/music';
 import { useMusicPlayer } from '../context/MusicPlayerContext';
@@ -160,7 +161,7 @@ export default function SearchScreen() {
           style={styles.searchInput}
         />
         <TouchableOpacity style={styles.searchButton} onPress={handleSearch}>
-          <Text style={styles.searchButtonText}>🔍</Text>
+          <Ionicons name="search" size={24} color="#FFFFFF" />
         </TouchableOpacity>
       </View>
 
@@ -211,9 +212,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#007AFF',
     borderRadius: 8,
   },
-  searchButtonText: {
-    fontSize: 20,
-  },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
@@ -225,7 +223,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   listContent: {
-    paddingBottom: 80,
+    paddingBottom: 150,
   },
   resultItem: {
     flexDirection: 'row',

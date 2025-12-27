@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
+import { Ionicons } from '@expo/vector-icons';
 import { RootStackParamList } from '../types/navigation';
 import { Button, Input, Card } from '../components';
 import { useMusicPlayer } from '../context/MusicPlayerContext';
@@ -77,7 +78,7 @@ export default function PlaylistsScreen() {
       >
         <View style={styles.playlistItem}>
           <View style={styles.playlistIcon}>
-            <Text style={styles.playlistIconText}>🎵</Text>
+            <Ionicons name="musical-notes" size={28} color="#FFFFFF" />
           </View>
           <View style={styles.playlistInfo}>
             <Text style={styles.playlistName}>{item.name}</Text>
@@ -89,7 +90,7 @@ export default function PlaylistsScreen() {
             onPress={() => handlePlayPlaylist(item)}
             style={styles.playButton}
           >
-            <Text style={styles.playButtonText}>▶</Text>
+            <Ionicons name="play" size={18} color="#FFFFFF" />
           </TouchableOpacity>
         </View>
       </TouchableOpacity>
@@ -174,7 +175,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 4,
   },
   listContent: {
-    paddingBottom: 80,
+    paddingBottom: 150,
   },
   playlistItem: {
     flexDirection: 'row',
@@ -188,9 +189,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 12,
-  },
-  playlistIconText: {
-    fontSize: 28,
   },
   playlistInfo: {
     flex: 1,
@@ -212,10 +210,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#007AFF',
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  playButtonText: {
-    color: '#FFFFFF',
-    fontSize: 18,
   },
   emptyContainer: {
     flex: 1,

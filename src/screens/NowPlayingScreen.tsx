@@ -8,6 +8,7 @@ import {
   Dimensions,
 } from 'react-native';
 import Slider from '@react-native-community/slider';
+import { Ionicons } from '@expo/vector-icons';
 import { useMusicPlayer } from '../context/MusicPlayerContext';
 
 const { width } = Dimensions.get('window');
@@ -51,14 +52,14 @@ export default function NowPlayingScreen() {
     seekTo(value);
   };
 
-  const getRepeatIcon = () => {
+  const getRepeatIcon = (): 'repeat' | 'repeat-outline' => {
     switch (repeatMode) {
       case 'one':
-        return '🔂';
+        return 'repeat-outline';
       case 'all':
-        return '🔁';
+        return 'repeat';
       default:
-        return '🔁';
+        return 'repeat';
     }
   };
 
@@ -87,7 +88,7 @@ export default function NowPlayingScreen() {
           />
         ) : (
           <View style={[styles.artwork, styles.placeholderArtwork]}>
-            <Text style={styles.placeholderText}>🎵</Text>
+            <Ionicons name="musical-notes" size={80} color="#666666" />
           </View>
         )}
       </View>
@@ -125,39 +126,47 @@ export default function NowPlayingScreen() {
           style={styles.controlButton}
           onPress={toggleShuffle}
         >
-          <Text style={[styles.controlIcon, shuffleMode && styles.activeIcon]}>
-            🔀
-          </Text>
+          <Ionicons
+            name="shuffle"
+            size={28}
+            color={shuffleMode ? '#007AFF' : '#FFFFFF'}
+          />
         </TouchableOpacity>
 
         <TouchableOpacity
           style={styles.controlButton}
           onPress={previousTrack}
         >
-          <Text style={styles.controlIcon}>⏮</Text>
+          <Ionicons name="play-skip-back" size={32} color="#FFFFFF" />
         </TouchableOpacity>
 
         <TouchableOpacity
           style={styles.playButton}
           onPress={isPlaying ? pauseTrack : resumeTrack}
         >
-          <Text style={styles.playIcon}>{isPlaying ? '⏸' : '▶'}</Text>
+          <Ionicons
+            name={isPlaying ? 'pause' : 'play'}
+            size={36}
+            color="#FFFFFF"
+          />
         </TouchableOpacity>
 
         <TouchableOpacity
           style={styles.controlButton}
           onPress={nextTrack}
         >
-          <Text style={styles.controlIcon}>⏭</Text>
+          <Ionicons name="play-skip-forward" size={32} color="#FFFFFF" />
         </TouchableOpacity>
 
         <TouchableOpacity
           style={styles.controlButton}
           onPress={cycleRepeatMode}
         >
-          <Text style={[styles.controlIcon, repeatMode !== 'off' && styles.activeIcon]}>
-            {getRepeatIcon()}
-          </Text>
+          <Ionicons
+            name={getRepeatIcon()}
+            size={28}
+            color={repeatMode !== 'off' ? '#007AFF' : '#FFFFFF'}
+          />
         </TouchableOpacity>
       </View>
     </View>
@@ -194,9 +203,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#1A1A1A',
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  placeholderText: {
-    fontSize: 80,
   },
   infoContainer: {
     alignItems: 'center',
@@ -240,10 +246,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  controlIcon: {
-    fontSize: 28,
-    color: '#FFFFFF',
-  },
   playButton: {
     width: 70,
     height: 70,
@@ -251,12 +253,5 @@ const styles = StyleSheet.create({
     backgroundColor: '#007AFF',
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  playIcon: {
-    fontSize: 36,
-    color: '#FFFFFF',
-  },
-  activeIcon: {
-    color: '#007AFF',
   },
 });
