@@ -97,7 +97,7 @@ class LyricsService {
       const params = {
         artist_name: track.artist,
         track_name: track.title,
-        album_name: track.album || '',
+        album_name: '',
         duration: track.duration || 0,
       };
 

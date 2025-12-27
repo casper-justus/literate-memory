@@ -12,8 +12,8 @@ export interface AudioData {
 class AudioVisualizerService {
   private audioContext: AudioContext | null = null;
   private analyser: AnalyserNode | null = null;
-  private dataArray: Uint8Array | null = null;
-  private timeDataArray: Uint8Array | null = null;
+  private dataArray: Uint8Array<ArrayBuffer> | null = null;
+  private timeDataArray: Uint8Array<ArrayBuffer> | null = null;
   private animationFrame: number | null = null;
   private isInitialized: boolean = false;
   private callbacks: ((data: AudioData) => void)[] = [];
@@ -31,10 +31,10 @@ class AudioVisualizerService {
         // Configure analyser
         this.analyser.fftSize = 256;
         this.analyser.smoothingTimeConstant = 0.8;
-        
+
         const bufferLength = this.analyser.frequencyBinCount;
-        this.dataArray = new Uint8Array(bufferLength);
-        this.timeDataArray = new Uint8Array(bufferLength);
+        this.dataArray = new Uint8Array(new ArrayBuffer(bufferLength)) as Uint8Array<ArrayBuffer>;
+        this.timeDataArray = new Uint8Array(new ArrayBuffer(bufferLength)) as Uint8Array<ArrayBuffer>;
 
         this.isInitialized = true;
         console.log('AudioVisualizerService initialized');
