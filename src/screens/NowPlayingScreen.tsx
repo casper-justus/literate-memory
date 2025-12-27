@@ -16,8 +16,10 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../types/navigation';
 import { useMusicPlayer } from '../context/MusicPlayerContext';
 import { Track } from '../types/music';
+import LyricsView from '../components/LyricsView';
 
-const { width } = Dimensions.get('window');
+
+const { width, height } = Dimensions.get('window');
 
 type NavigationProp = StackNavigationProp<RootStackParamList>;
 
@@ -43,6 +45,7 @@ export default function NowPlayingScreen() {
 
   const [sliderValue, setSliderValue] = useState(0);
   const [isSeeking, setIsSeeking] = useState(false);
+  const [showLyrics, setShowLyrics] = useState(false);
 
   useEffect(() => {
     if (!isSeeking) {
@@ -145,85 +148,121 @@ export default function NowPlayingScreen() {
     );
   }
 
-  const backgroundSource = currentTrack.thumbnail
-    ? { uri: currentTrack.thumbnail }
-    : undefined;
-
-  const content = (
-    <View style={styles.content}>
-      <View style={styles.artworkContainer}>
-        {currentTrack.thumbnail ? (
-          <Image source={{ uri: currentTrack.thumbnail }} style={styles.artwork} />
-        ) : (
-          <View style={[styles.artwork, styles.placeholderArtwork]}>
-            <Ionicons name="musical-notes" size={80} color="#666666" />
-          </View>
-        )}
-      </View>
-
-      <View style={styles.infoContainer}>
-        <Text style={styles.title} numberOfLines={2}>
-          {currentTrack.title}
-        </Text>
-        <Text style={styles.artist} numberOfLines={1}>
-          {currentTrack.artist}
-        </Text>
-      </View>
-
-      <View style={styles.sliderContainer}>
-        <Slider
-          style={styles.slider}
-          minimumValue={0}
-          maximumValue={duration}
-          value={sliderValue}
-          onValueChange={handleSliderChange}
-          onSlidingStart={() => setIsSeeking(true)}
-          onSlidingComplete={handleSliderComplete}
-          minimumTrackTintColor="#007AFF"
-          maximumTrackTintColor="#333333"
-          thumbTintColor="#007AFF"
-        />
-        <View style={styles.timeContainer}>
-          <Text style={styles.timeText}>{formatTime(position)}</Text>
-          <Text style={styles.timeText}>{formatTime(duration)}</Text>
-        </View>
-      </View>
-
-      <View style={styles.controlsContainer}>
-        <TouchableOpacity style={styles.controlButton} onPress={toggleShuffle}>
-          <Ionicons
-            name="shuffle"
-            size={28}
-            color={shuffleMode ? '#007AFF' : '#FFFFFF'}
-          />
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.controlButton} onPress={previousTrack}>
-          <Ionicons name="play-skip-back" size={32} color="#FFFFFF" />
-        </TouchableOpacity>
-
+  return (
+    <View style={styles.container}>
+      <View style={styles.header}>
         <TouchableOpacity
-          style={styles.playButton}
-          onPress={isPlaying ? pauseTrack : resumeTrack}
+          onPress={() => setShowLyrics(!showLyrics)}
+          style={styles.lyricsToggle}
         >
           <Ionicons
-            name={isPlaying ? 'pause' : 'play'}
-            size={36}
-            color="#FFFFFF"
+            name="list"
+            size={24}
+            color={showLyrics ? '#007AFF' : '#FFFFFF'}
           />
         </TouchableOpacity>
+      </View>
 
-        <TouchableOpacity style={styles.controlButton} onPress={nextTrack}>
-          <Ionicons name="play-skip-forward" size={32} color="#FFFFFF" />
-        </TouchableOpacity>
+      {showLyrics && currentTrack.lyrics ? (
+        <LyricsView
+          lyrics={currentTrack.lyrics}
+          currentPosition={position}
+          onSeek={seekTo}
+        />
+      ) : (
+        <>
+          <View style={styles.artworkContainer}>
+            {currentTrack.thumbnail ? (
+              <Image
+                source={{ uri: currentTrack.thumbnail }}
+                style={styles.artwork}
+              />
+            ) : (
+              <View style={[styles.artwork, styles.placeholderArtwork]}>
+                <Ionicons name="musical-notes" size={80} color="#666666" />
+              </View>
+            )}
+          </View>
 
-        <TouchableOpacity style={styles.controlButton} onPress={cycleRepeatMode}>
-          <Ionicons
-            name={getRepeatIcon()}
-            size={28}
-            color={repeatMode !== 'off' ? '#007AFF' : '#FFFFFF'}
+          <View style={styles.infoContainer}>
+            <Text style={styles.title} numberOfLines={2}>
+              {currentTrack.title}
+            </Text>
+            <Text style={styles.artist} numberOfLines={1}>
+              {currentTrack.artist}
+            </Text>
+          </View>
+        </>
+      )}
+
+      <View style={styles.bottomControls}>
+        <View style={styles.sliderContainer}>
+          <Slider
+            style={styles.slider}
+            minimumValue={0}
+            maximumValue={duration}
+            value={sliderValue}
+            onValueChange={handleSliderChange}
+            onSlidingStart={() => setIsSeeking(true)}
+            onSlidingComplete={handleSliderComplete}
+            minimumTrackTintColor="#007AFF"
+            maximumTrackTintColor="#333333"
+            thumbTintColor="#007AFF"
           />
-        </TouchableOpacity>
+          <View style={styles.timeContainer}>
+            <Text style={styles.timeText}>{formatTime(position)}</Text>
+            <Text style={styles.timeText}>{formatTime(duration)}</Text>
+          </View>
+        </View>
+
+        <View style={styles.controlsContainer}>
+          <TouchableOpacity
+            style={styles.controlButton}
+            onPress={toggleShuffle}
+          >
+            <Ionicons
+              name="shuffle"
+              size={28}
+              color={shuffleMode ? '#007AFF' : '#FFFFFF'}
+            />
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.controlButton}
+            onPress={previousTrack}
+          >
+            <Ionicons name="play-skip-back" size={32} color="#FFFFFF" />
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.playButton}
+            onPress={isPlaying ? pauseTrack : resumeTrack}
+          >
+            <Ionicons
+              name={isPlaying ? 'pause' : 'play'}
+              size={36}
+              color="#FFFFFF"
+            />
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.controlButton}
+            onPress={nextTrack}
+          >
+            <Ionicons name="play-skip-forward" size={32} color="#FFFFFF" />
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.controlButton}
+            onPress={cycleRepeatMode}
+          >
+            <Ionicons
+              name={getRepeatIcon()}
+              size={28}
+              color={repeatMode !== 'off' ? '#007AFF' : '#FFFFFF'}
+            />
+          </TouchableOpacity>
+        </View>
       </View>
     </View>
   );
@@ -257,6 +296,15 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     padding: 20,
+    justifyContent: 'space-between',
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    marginTop: 10,
+  },
+  lyricsToggle: {
+    padding: 10,
   },
   emptyContainer: {
     flex: 1,
@@ -277,8 +325,8 @@ const styles = StyleSheet.create({
   },
   artworkContainer: {
     alignItems: 'center',
-    marginTop: 10,
-    marginBottom: 30,
+    marginTop: 20,
+    marginBottom: 20,
   },
   artwork: {
     width: width - 80,
@@ -292,7 +340,7 @@ const styles = StyleSheet.create({
   },
   infoContainer: {
     alignItems: 'center',
-    marginBottom: 30,
+    marginBottom: 20,
   },
   title: {
     color: '#FFFFFF',
@@ -305,8 +353,11 @@ const styles = StyleSheet.create({
     color: '#AAAAAA',
     fontSize: 16,
   },
+  bottomControls: {
+    marginBottom: 20,
+  },
   sliderContainer: {
-    marginBottom: 30,
+    marginBottom: 20,
   },
   slider: {
     width: '100%',

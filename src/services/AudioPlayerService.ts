@@ -23,11 +23,12 @@ export class AudioPlayerService {
   }
 
   async loadTrack(track: Track, autoPlay: boolean = true): Promise<boolean> {
+    // If there's an ongoing load, wait for it to finish first
     if (this.loadingPromise) {
       await this.loadingPromise;
     }
 
-    let resolveLoading: () => void = () => {};
+    let resolveLoading: () => void;
     this.loadingPromise = new Promise((resolve) => {
       resolveLoading = resolve;
     });
@@ -64,7 +65,7 @@ export class AudioPlayerService {
       return false;
     } finally {
       this.loadingPromise = null;
-      resolveLoading();
+      resolveLoading!();
     }
   }
 
