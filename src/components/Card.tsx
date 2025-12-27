@@ -6,9 +6,14 @@ interface CardProps {
   style?: ViewStyle;
 }
 
-export default function Card({ children, style }: CardProps) {
+// ⚡ Bolt: Memoized Card component to prevent unnecessary re-renders.
+// This is a pure component, so it will only re-render if its props (children, style) change.
+// This is particularly useful in screens with frequent state updates, like MusicPlayerScreen.
+const Card = React.memo(({ children, style }: CardProps) => {
   return <View style={[styles.card, style]}>{children}</View>;
-}
+});
+
+export default Card;
 
 const styles = StyleSheet.create({
   card: {
