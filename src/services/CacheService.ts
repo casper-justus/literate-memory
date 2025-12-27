@@ -15,7 +15,7 @@ class CacheService {
   private cacheIndexKey = '@cache_index';
 
   constructor() {
-    this.cacheDir = `${FileSystem.documentDirectory}cache/`;
+    this.cacheDir = `${FileSystem.Paths.document ?? FileSystem.Paths.cache}cache/`;
     this.ensureCacheDir();
   }
 
