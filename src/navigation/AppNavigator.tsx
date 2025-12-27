@@ -1,12 +1,12 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { Ionicons } from '@expo/vector-icons';
 import { RootStackParamList, BottomTabParamList } from '../types/navigation';
 import HomeScreen from '../screens/HomeScreen';
 import DetailsScreen from '../screens/DetailsScreen';
-import ProfileScreen from '../screens/ProfileScreen';
 import MusicPlayerScreen from '../screens/MusicPlayerScreen';
 import SearchScreen from '../screens/SearchScreen';
 import PlaylistsScreen from '../screens/PlaylistsScreen';
@@ -49,7 +49,9 @@ function TabNavigator() {
           component={HomeScreen}
           options={{
             title: 'Home',
-            tabBarIcon: ({ color }) => <Text style={{ fontSize: 24 }}>🏠</Text>,
+            tabBarIcon: ({ color, size }) => (
+              <Ionicons name="home" size={size || 24} color={color} />
+            ),
           }}
         />
         <Tab.Screen
@@ -57,7 +59,9 @@ function TabNavigator() {
           component={MusicPlayerScreen}
           options={{
             title: 'Music',
-            tabBarIcon: ({ color }) => <Text style={{ fontSize: 24 }}>🎵</Text>,
+            tabBarIcon: ({ color, size }) => (
+              <Ionicons name="musical-notes" size={size || 24} color={color} />
+            ),
           }}
         />
         <Tab.Screen
@@ -65,7 +69,9 @@ function TabNavigator() {
           component={SearchScreen}
           options={{
             title: 'Search',
-            tabBarIcon: ({ color }) => <Text style={{ fontSize: 24 }}>🔍</Text>,
+            tabBarIcon: ({ color, size }) => (
+              <Ionicons name="search" size={size || 24} color={color} />
+            ),
           }}
         />
         <Tab.Screen
@@ -73,7 +79,9 @@ function TabNavigator() {
           component={PlaylistsScreen}
           options={{
             title: 'Playlists',
-            tabBarIcon: ({ color }) => <Text style={{ fontSize: 24 }}>📋</Text>,
+            tabBarIcon: ({ color, size }) => (
+              <Ionicons name="list" size={size || 24} color={color} />
+            ),
           }}
         />
         <Tab.Screen
@@ -81,7 +89,9 @@ function TabNavigator() {
           component={SettingsScreen}
           options={{
             title: 'Settings',
-            tabBarIcon: ({ color }) => <Text style={{ fontSize: 24 }}>⚙️</Text>,
+            tabBarIcon: ({ color, size }) => (
+              <Ionicons name="settings" size={size || 24} color={color} />
+            ),
           }}
         />
       </Tab.Navigator>

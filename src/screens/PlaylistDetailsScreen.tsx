@@ -9,6 +9,7 @@ import {
   Alert,
 } from 'react-native';
 import { RouteProp, useRoute } from '@react-navigation/native';
+import { Ionicons } from '@expo/vector-icons';
 import { RootStackParamList } from '../types/navigation';
 import { useMusicPlayer } from '../context/MusicPlayerContext';
 import { Track } from '../types/music';
@@ -100,7 +101,7 @@ export default function PlaylistDetailsScreen() {
       <View style={styles.header}>
         <View style={styles.playlistHeader}>
           <View style={styles.playlistIcon}>
-            <Text style={styles.playlistIconText}>🎵</Text>
+            <Ionicons name="musical-notes" size={40} color="#FFFFFF" />
           </View>
           <View style={styles.playlistHeaderInfo}>
             <Text style={styles.playlistName}>{playlist.name}</Text>
@@ -110,7 +111,7 @@ export default function PlaylistDetailsScreen() {
           </View>
         </View>
         <Button
-          title="▶ Play All"
+          title="Play All"
           onPress={handlePlayAll}
           variant="primary"
           style={styles.playAllButton}
@@ -160,9 +161,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginRight: 16,
   },
-  playlistIconText: {
-    fontSize: 40,
-  },
   playlistHeaderInfo: {
     flex: 1,
   },
@@ -180,7 +178,7 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   listContent: {
-    paddingBottom: 80,
+    paddingBottom: 150,
   },
   trackItem: {
     flexDirection: 'row',

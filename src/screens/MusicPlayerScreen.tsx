@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
+import { Ionicons } from '@expo/vector-icons';
 import { RootStackParamList } from '../types/navigation';
 import { Card } from '../components';
 import { useMusicPlayer } from '../context/MusicPlayerContext';
@@ -21,7 +22,9 @@ export default function MusicPlayerScreen() {
           style={styles.menuItem}
           onPress={() => navigation.navigate('Search')}
         >
-          <Text style={styles.menuIcon}>🔍</Text>
+          <View style={styles.menuIconContainer}>
+            <Ionicons name="search" size={32} color="#007AFF" />
+          </View>
           <View style={styles.menuInfo}>
             <Text style={styles.menuTitle}>Search Music</Text>
             <Text style={styles.menuSubtitle}>Find and play your favorite tracks</Text>
@@ -32,7 +35,9 @@ export default function MusicPlayerScreen() {
           style={styles.menuItem}
           onPress={() => navigation.navigate('Playlists')}
         >
-          <Text style={styles.menuIcon}>🎵</Text>
+          <View style={styles.menuIconContainer}>
+            <Ionicons name="list" size={32} color="#007AFF" />
+          </View>
           <View style={styles.menuInfo}>
             <Text style={styles.menuTitle}>My Playlists</Text>
             <Text style={styles.menuSubtitle}>{playlists.length} playlists</Text>
@@ -44,7 +49,9 @@ export default function MusicPlayerScreen() {
             style={styles.menuItem}
             onPress={() => navigation.navigate('NowPlaying')}
           >
-            <Text style={styles.menuIcon}>🎧</Text>
+            <View style={styles.menuIconContainer}>
+              <Ionicons name="headset" size={32} color="#007AFF" />
+            </View>
             <View style={styles.menuInfo}>
               <Text style={styles.menuTitle}>Now Playing</Text>
               <Text style={styles.menuSubtitle}>{playerState.currentTrack.title}</Text>
@@ -83,19 +90,19 @@ export default function MusicPlayerScreen() {
         <Text style={styles.sectionTitle}>Features</Text>
         <View style={styles.featuresGrid}>
           <View style={styles.feature}>
-            <Text style={styles.featureIcon}>🎵</Text>
+            <Ionicons name="logo-youtube" size={32} color="#FFFFFF" style={styles.featureIcon} />
             <Text style={styles.featureText}>YouTube Music</Text>
           </View>
           <View style={styles.feature}>
-            <Text style={styles.featureIcon}>📱</Text>
+            <Ionicons name="phone-portrait" size={32} color="#FFFFFF" style={styles.featureIcon} />
             <Text style={styles.featureText}>Native Playback</Text>
           </View>
           <View style={styles.feature}>
-            <Text style={styles.featureIcon}>🔁</Text>
+            <Ionicons name="repeat" size={32} color="#FFFFFF" style={styles.featureIcon} />
             <Text style={styles.featureText}>Repeat & Shuffle</Text>
           </View>
           <View style={styles.feature}>
-            <Text style={styles.featureIcon}>📋</Text>
+            <Ionicons name="list" size={32} color="#FFFFFF" style={styles.featureIcon} />
             <Text style={styles.featureText}>Playlists</Text>
           </View>
         </View>
@@ -114,7 +121,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#000000',
   },
   content: {
-    paddingBottom: 100,
+    paddingBottom: 160,
   },
   card: {
     margin: 16,
@@ -133,8 +140,9 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#2A2A2A',
   },
-  menuIcon: {
-    fontSize: 32,
+  menuIconContainer: {
+    width: 48,
+    alignItems: 'center',
     marginRight: 16,
   },
   menuInfo: {
@@ -191,7 +199,6 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
   },
   featureIcon: {
-    fontSize: 32,
     marginBottom: 8,
   },
   featureText: {

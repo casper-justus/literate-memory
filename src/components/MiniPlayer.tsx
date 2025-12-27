@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
+import { Ionicons } from '@expo/vector-icons';
 import { RootStackParamList } from '../types/navigation';
 import { useMusicPlayer } from '../context/MusicPlayerContext';
 
@@ -51,7 +52,11 @@ export default function MiniPlayer() {
             }}
             style={styles.controlButton}
           >
-            <Text style={styles.controlIcon}>{isPlaying ? '⏸' : '▶'}</Text>
+            <Ionicons
+              name={isPlaying ? 'pause' : 'play'}
+              size={24}
+              color="#FFFFFF"
+            />
           </TouchableOpacity>
           <TouchableOpacity
             onPress={(e) => {
@@ -60,7 +65,7 @@ export default function MiniPlayer() {
             }}
             style={styles.controlButton}
           >
-            <Text style={styles.controlIcon}>⏭</Text>
+            <Ionicons name="play-skip-forward" size={24} color="#FFFFFF" />
           </TouchableOpacity>
         </View>
       </View>
@@ -71,7 +76,7 @@ export default function MiniPlayer() {
 const styles = StyleSheet.create({
   container: {
     position: 'absolute',
-    bottom: 0,
+    bottom: 60,
     left: 0,
     right: 0,
     backgroundColor: '#1E1E1E',
@@ -117,9 +122,5 @@ const styles = StyleSheet.create({
     height: 40,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  controlIcon: {
-    fontSize: 20,
-    color: '#FFFFFF',
   },
 });
