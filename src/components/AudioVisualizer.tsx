@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, Dimensions } from 'react-native';
 import Svg, { Rect, Path, Circle, Line } from 'react-native-svg';
 import AudioVisualizerService, { AudioData } from '../services/AudioVisualizerService';
@@ -13,7 +13,8 @@ interface AudioVisualizerProps {
   isPlaying?: boolean;
 }
 
-export default function AudioVisualizer({
+// ⚡ Bolt: Memoize the component to prevent unnecessary re-renders from parent components.
+export default React.memo(function AudioVisualizer({
   type = 'bars',
   color = '#007AFF',
   barCount = 32,
@@ -194,7 +195,7 @@ export default function AudioVisualizer({
       {renderVisualizer()}
     </View>
   );
-}
+});
 
 const styles = StyleSheet.create({
   container: {
