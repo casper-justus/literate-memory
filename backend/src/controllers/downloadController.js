@@ -156,24 +156,40 @@ class DownloadController {
   async downloadFile(req, res) {
     try {
       const { filename } = req.params;
+
+      // Sanitize filename to prevent path traversal attacks.
+      const safeFilename = path.basename(filename);
+
+      // This is a critical security check.
+      // It ensures that even if the filename is manipulated, the resulting path
+      // cannot point to a file outside of the designated downloads directory.
+      const intendedPath = path.join(downloadService.downloadsDir, safeFilename);
       
-      const filePath = path.join(downloadService.downloadsDir, filename);
+      // Resolve the absolute path to be extra safe.
+      const resolvedPath = path.resolve(intendedPath);
+      const resolvedDownloadsDir = path.resolve(downloadService.downloadsDir);
+
+      if (!resolvedPath.startsWith(resolvedDownloadsDir)) {
+        return res.status(403).json({
+          error: 'Forbidden',
+          success: false,
+        });
+      }
       
-      res.download(filePath, filename, (error) => {
-        if (error) {
+      res.download(resolvedPath, safeFilename, (error) => {
+        if (error && !res.headersSent) {
           console.error('File download error:', error);
-          if (!res.headersSent) {
-            res.status(404).json({ 
-              error: 'File not found',
-              success: false,
-            });
-          }
+          res.status(404).json({
+            error: 'File not found',
+            success: false,
+          });
         }
       });
     } catch (error) {
       console.error('Download file error:', error);
+      // Avoid leaking internal error details to the client.
       res.status(500).json({ 
-        error: error.message,
+        error: 'An internal server error occurred',
         success: false,
       });
     }
