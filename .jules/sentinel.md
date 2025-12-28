@@ -1,0 +1,4 @@
+## 2024-08-01 - Path Traversal in File Download
+**Vulnerability:** A path traversal vulnerability was identified in the `downloadFile` function of the `downloadController.js`. The `filename` parameter was taken directly from the user's request and used to construct a file path. This allowed an attacker to use `../` sequences to access files outside of the intended downloads directory.
+**Learning:** User-provided input, especially when used for file system operations, must always be treated as untrusted. The lack of input sanitization on the `filename` parameter created this critical vulnerability.
+**Prevention:** To prevent this type of vulnerability in the future, all user-provided data used in file paths must be sanitized. Using functions like `path.basename()` and verifying that the final, resolved path is within the expected directory are essential security measures.
