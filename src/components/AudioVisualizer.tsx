@@ -13,7 +13,7 @@ interface AudioVisualizerProps {
   isPlaying?: boolean;
 }
 
-export default function AudioVisualizer({
+const AudioVisualizer = ({
   type = 'bars',
   color = '#007AFF',
   barCount = 32,
@@ -194,7 +194,11 @@ export default function AudioVisualizer({
       {renderVisualizer()}
     </View>
   );
-}
+};
+
+// Memoize AudioVisualizer to prevent unnecessary re-renders when props are unchanged.
+// This is a key optimization for a component that receives frequent updates.
+export default React.memo(AudioVisualizer);
 
 const styles = StyleSheet.create({
   container: {
