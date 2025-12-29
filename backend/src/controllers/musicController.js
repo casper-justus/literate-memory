@@ -1,6 +1,10 @@
 const ytdlpService = require('../services/ytdlpService');
 const lyricsService = require('../services/lyricsService');
 
+// Regex to validate YouTube video and playlist IDs
+const YOUTUBE_VIDEO_ID_REGEX = /^[a-zA-Z0-9_-]{11}$/;
+const YOUTUBE_PLAYLIST_ID_REGEX = /^[a-zA-Z0-9_-]{24,34}$/;
+
 class MusicController {
   async search(req, res) {
     try {
@@ -22,8 +26,8 @@ class MusicController {
     try {
       const { videoId } = req.params;
       
-      if (!videoId) {
-        return res.status(400).json({ error: 'Video ID is required' });
+      if (!videoId || !YOUTUBE_VIDEO_ID_REGEX.test(videoId)) {
+        return res.status(400).json({ error: 'Invalid or missing Video ID' });
       }
 
       const info = await ytdlpService.getVideoInfo(videoId);
@@ -38,8 +42,8 @@ class MusicController {
     try {
       const { videoId } = req.params;
       
-      if (!videoId) {
-        return res.status(400).json({ error: 'Video ID is required' });
+      if (!videoId || !YOUTUBE_VIDEO_ID_REGEX.test(videoId)) {
+        return res.status(400).json({ error: 'Invalid or missing Video ID' });
       }
 
       const url = await ytdlpService.getAudioUrl(videoId);
@@ -54,8 +58,8 @@ class MusicController {
     try {
       const { videoId } = req.params;
       
-      if (!videoId) {
-        return res.status(400).json({ error: 'Video ID is required' });
+      if (!videoId || !YOUTUBE_VIDEO_ID_REGEX.test(videoId)) {
+        return res.status(400).json({ error: 'Invalid or missing Video ID' });
       }
 
       const formats = await ytdlpService.getAudioFormats(videoId);
@@ -81,8 +85,8 @@ class MusicController {
     try {
       const { videoId } = req.params;
       
-      if (!videoId) {
-        return res.status(400).json({ error: 'Video ID is required' });
+      if (!videoId || !YOUTUBE_VIDEO_ID_REGEX.test(videoId)) {
+        return res.status(400).json({ error: 'Invalid or missing Video ID' });
       }
 
       const url = await ytdlpService.getAudioUrl(videoId);
@@ -99,8 +103,8 @@ class MusicController {
     try {
       const { playlistId } = req.params;
 
-      if (!playlistId) {
-        return res.status(400).json({ error: 'Playlist ID is required' });
+      if (!playlistId || !YOUTUBE_PLAYLIST_ID_REGEX.test(playlistId)) {
+        return res.status(400).json({ error: 'Invalid or missing Playlist ID' });
       }
 
       const playlist = await ytdlpService.getPlaylist(playlistId);

@@ -1,14 +1,18 @@
 const downloadService = require('../services/downloadService');
 const path = require('path');
 
+// Regex to validate YouTube video and playlist IDs
+const YOUTUBE_VIDEO_ID_REGEX = /^[a-zA-Z0-9_-]{11}$/;
+const YOUTUBE_PLAYLIST_ID_REGEX = /^[a-zA-Z0-9_-]{24,34}$/;
+
 class DownloadController {
   async downloadTrack(req, res) {
     try {
       const { videoId } = req.params;
       const { format, quality } = req.query;
       
-      if (!videoId) {
-        return res.status(400).json({ error: 'Video ID is required' });
+      if (!videoId || !YOUTUBE_VIDEO_ID_REGEX.test(videoId)) {
+        return res.status(400).json({ error: 'Invalid or missing Video ID' });
       }
 
       const downloadInfo = await downloadService.downloadTrack(videoId, {
@@ -35,8 +39,8 @@ class DownloadController {
       const { playlistId } = req.params;
       const { format, quality } = req.query;
       
-      if (!playlistId) {
-        return res.status(400).json({ error: 'Playlist ID is required' });
+      if (!playlistId || !YOUTUBE_PLAYLIST_ID_REGEX.test(playlistId)) {
+        return res.status(400).json({ error: 'Invalid or missing Playlist ID' });
       }
 
       // Start playlist download asynchronously
