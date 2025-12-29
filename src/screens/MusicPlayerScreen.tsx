@@ -82,7 +82,15 @@ export default function MusicPlayerScreen() {
             )}
           </View>
         ) : (
-          <Text style={styles.emptyText}>No tracks in queue</Text>
+          <View style={styles.emptyContainer}>
+            <Text style={styles.emptyText}>Your queue is empty</Text>
+            <TouchableOpacity
+              style={styles.emptyButton}
+              onPress={() => navigation.navigate('Search')}
+            >
+              <Text style={styles.emptyButtonText}>Find Music</Text>
+            </TouchableOpacity>
+          </View>
         )}
       </Card>
 
@@ -187,6 +195,22 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#666666',
     fontStyle: 'italic',
+    marginBottom: 16,
+  },
+  emptyContainer: {
+    alignItems: 'center',
+    paddingVertical: 20,
+  },
+  emptyButton: {
+    backgroundColor: '#007AFF',
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    borderRadius: 24,
+  },
+  emptyButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '600',
   },
   featuresGrid: {
     flexDirection: 'row',
