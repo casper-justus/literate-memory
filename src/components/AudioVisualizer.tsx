@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState, memo } from 'react';
 import { View, StyleSheet, Dimensions } from 'react-native';
 import Svg, { Rect, Path, Circle, Line } from 'react-native-svg';
 import AudioVisualizerService, { AudioData } from '../services/AudioVisualizerService';
@@ -13,13 +13,13 @@ interface AudioVisualizerProps {
   isPlaying?: boolean;
 }
 
-export default function AudioVisualizer({
+const AudioVisualizer = ({
   type = 'bars',
   color = '#007AFF',
   barCount = 32,
   height = 200,
   isPlaying = false,
-}: AudioVisualizerProps) {
+}: AudioVisualizerProps) => {
   const [audioData, setAudioData] = useState<AudioData>({
     frequencyData: Array(128).fill(0),
     timeDomainData: Array(128).fill(128),
@@ -172,7 +172,7 @@ export default function AudioVisualizer({
 
   const renderVisualizer = () => {
     if (!isPlaying) {
-      return renderBars(); // Show static bars when not playing
+      return renderBars();
     }
 
     switch (type) {
@@ -194,7 +194,7 @@ export default function AudioVisualizer({
       {renderVisualizer()}
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -203,3 +203,5 @@ const styles = StyleSheet.create({
     padding: 20,
   },
 });
+
+export default memo(AudioVisualizer);
