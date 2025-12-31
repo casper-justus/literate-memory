@@ -290,6 +290,7 @@ export default function SearchScreen() {
           onChangeText={setQuery}
           onSubmitEditing={handleSearch}
           style={styles.searchInput}
+          onClear={() => setQuery('')}
         />
         <TouchableOpacity style={styles.searchButton} onPress={handleSearch}>
           <Ionicons name="search" size={24} color="#FFFFFF" />
