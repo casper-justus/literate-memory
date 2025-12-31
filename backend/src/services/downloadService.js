@@ -250,7 +250,16 @@ class DownloadService {
 
   async deleteDownload(filename) {
     try {
-      const filePath = path.join(this.downloadsDir, filename);
+      // Sanitize filename to prevent path traversal
+      const sanitizedFilename = path.basename(filename);
+      const filePath = path.join(this.downloadsDir, sanitizedFilename);
+
+      // Verify the resolved path is within the downloads directory
+      if (!path.resolve(filePath).startsWith(path.resolve(this.downloadsDir) + path.sep)) {
+        console.error('Attempted to delete file outside of downloads directory:', filePath);
+        return false;
+      }
+
       await fs.unlink(filePath);
       return true;
     } catch (error) {

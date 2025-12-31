@@ -155,9 +155,15 @@ class DownloadController {
 
   async downloadFile(req, res) {
     try {
-      const { filename } = req.params;
+      // Sanitize filename to prevent path traversal
+      const filename = path.basename(req.params.filename);
       
       const filePath = path.join(downloadService.downloadsDir, filename);
+
+      // Verify the resolved path is within the downloads directory
+      if (!path.resolve(filePath).startsWith(path.resolve(downloadService.downloadsDir) + path.sep)) {
+        return res.status(403).json({ error: 'Forbidden' });
+      }
       
       res.download(filePath, filename, (error) => {
         if (error) {
