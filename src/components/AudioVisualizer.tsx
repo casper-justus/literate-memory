@@ -13,7 +13,12 @@ interface AudioVisualizerProps {
   isPlaying?: boolean;
 }
 
-export default function AudioVisualizer({
+// ⚡ Bolt: `React.memo` is used here to prevent unnecessary re-renders.
+// The `AudioVisualizer` component's props (`type`, `color`, etc.) change
+// infrequently, but it can be re-rendered often by its parent. `React.memo`
+// performs a shallow comparison of props, preventing re-renders if they
+// haven't changed, which is a significant performance optimization.
+export default React.memo(function AudioVisualizer({
   type = 'bars',
   color = '#007AFF',
   barCount = 32,
@@ -194,7 +199,7 @@ export default function AudioVisualizer({
       {renderVisualizer()}
     </View>
   );
-}
+});
 
 const styles = StyleSheet.create({
   container: {
