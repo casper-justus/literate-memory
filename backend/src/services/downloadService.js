@@ -251,10 +251,23 @@ class DownloadService {
   async deleteDownload(filename) {
     try {
       const filePath = path.join(this.downloadsDir, filename);
+
+      // Security check: Ensure the file path is within the downloads directory
+      const resolvedDownloadsDir = path.resolve(this.downloadsDir);
+      const resolvedFilePath = path.resolve(filePath);
+
+      if (!resolvedFilePath.startsWith(resolvedDownloadsDir + path.sep)) {
+        console.warn(`Path traversal attempt blocked for filename: ${filename}`);
+        return false;
+      }
+
       await fs.unlink(filePath);
       return true;
     } catch (error) {
-      console.error('Error deleting file:', error);
+      // Avoid logging error if file simply doesn't exist, which is a common case.
+      if (error.code !== 'ENOENT') {
+        console.error('Error deleting file:', error);
+      }
       return false;
     }
   }

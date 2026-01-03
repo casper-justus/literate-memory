@@ -155,7 +155,8 @@ class DownloadController {
 
   async downloadFile(req, res) {
     try {
-      const { filename } = req.params;
+      // Sanitize filename to prevent path traversal
+      const filename = path.basename(req.params.filename);
       
       const filePath = path.join(downloadService.downloadsDir, filename);
       
@@ -181,7 +182,8 @@ class DownloadController {
 
   async deleteFile(req, res) {
     try {
-      const { filename } = req.params;
+      // Sanitize filename to prevent path traversal
+      const filename = path.basename(req.params.filename);
       
       const success = await downloadService.deleteDownload(filename);
       
