@@ -16,6 +16,7 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../types/navigation';
 import { useMusicPlayer } from '../context/MusicPlayerContext';
 import { Track } from '../types/music';
+import { formatTime } from '../utils/formatters';
 import LyricsView from '../components/LyricsView';
 
 
@@ -52,13 +53,6 @@ export default function NowPlayingScreen() {
       setSliderValue(position);
     }
   }, [position, isSeeking]);
-
-  const formatTime = (millis: number) => {
-    const totalSeconds = Math.floor(millis / 1000);
-    const minutes = Math.floor(totalSeconds / 60);
-    const seconds = totalSeconds % 60;
-    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
-  };
 
   const handleSliderChange = (value: number) => {
     setSliderValue(value);
