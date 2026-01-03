@@ -132,6 +132,7 @@ export default function NowPlayingScreen() {
               onPress={() => openOptions(currentTrack)}
               style={styles.headerIconButton}
               hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+              accessibilityLabel="More options"
             >
               <Ionicons name="ellipsis-vertical" size={22} color="#FFFFFF" />
             </TouchableOpacity>
@@ -154,6 +155,7 @@ export default function NowPlayingScreen() {
         <TouchableOpacity
           onPress={() => setShowLyrics(!showLyrics)}
           style={styles.lyricsToggle}
+          accessibilityLabel={showLyrics ? 'Hide lyrics' : 'Show lyrics'}
         >
           <Ionicons
             name="list"
@@ -219,6 +221,7 @@ export default function NowPlayingScreen() {
           <TouchableOpacity
             style={styles.controlButton}
             onPress={toggleShuffle}
+            accessibilityLabel={shuffleMode ? 'Disable shuffle' : 'Enable shuffle'}
           >
             <Ionicons
               name="shuffle"
@@ -230,6 +233,7 @@ export default function NowPlayingScreen() {
           <TouchableOpacity
             style={styles.controlButton}
             onPress={previousTrack}
+            accessibilityLabel="Previous track"
           >
             <Ionicons name="play-skip-back" size={32} color="#FFFFFF" />
           </TouchableOpacity>
@@ -237,6 +241,7 @@ export default function NowPlayingScreen() {
           <TouchableOpacity
             style={styles.playButton}
             onPress={isPlaying ? pauseTrack : resumeTrack}
+            accessibilityLabel={isPlaying ? 'Pause' : 'Play'}
           >
             <Ionicons
               name={isPlaying ? 'pause' : 'play'}
@@ -248,6 +253,7 @@ export default function NowPlayingScreen() {
           <TouchableOpacity
             style={styles.controlButton}
             onPress={nextTrack}
+            accessibilityLabel="Next track"
           >
             <Ionicons name="play-skip-forward" size={32} color="#FFFFFF" />
           </TouchableOpacity>
@@ -255,6 +261,7 @@ export default function NowPlayingScreen() {
           <TouchableOpacity
             style={styles.controlButton}
             onPress={cycleRepeatMode}
+            accessibilityLabel={`Repeat mode: ${repeatMode}`}
           >
             <Ionicons
               name={getRepeatIcon()}
