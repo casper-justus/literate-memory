@@ -3,6 +3,7 @@ import {
   formatCurrency,
   capitalize,
   truncate,
+  formatTime,
 } from '../../src/utils/formatters';
 
 describe('Formatters', () => {
@@ -34,6 +35,24 @@ describe('Formatters', () => {
     it('should truncate long strings', () => {
       expect(truncate('Hello World', 8)).toBe('Hello...');
       expect(truncate('Short', 10)).toBe('Short');
+    });
+  });
+
+  describe('formatTime', () => {
+    it('should format milliseconds into a mm:ss string', () => {
+      expect(formatTime(90000)).toBe('1:30');
+    });
+
+    it('should pad seconds with a leading zero when necessary', () => {
+      expect(formatTime(65000)).toBe('1:05');
+    });
+
+    it('should handle zero milliseconds', () => {
+      expect(formatTime(0)).toBe('0:00');
+    });
+
+    it('should handle times over a minute correctly', () => {
+      expect(formatTime(125000)).toBe('2:05');
     });
   });
 });
