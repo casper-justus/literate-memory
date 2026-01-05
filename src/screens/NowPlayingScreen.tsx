@@ -21,6 +21,14 @@ import LyricsView from '../components/LyricsView';
 
 const { width, height } = Dimensions.get('window');
 
+// Moved formatTime outside the component to prevent re-creation on every render.
+const formatTime = (millis: number) => {
+  const totalSeconds = Math.floor(millis / 1000);
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+  return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+};
+
 type NavigationProp = StackNavigationProp<RootStackParamList>;
 
 export default function NowPlayingScreen() {
@@ -52,13 +60,6 @@ export default function NowPlayingScreen() {
       setSliderValue(position);
     }
   }, [position, isSeeking]);
-
-  const formatTime = (millis: number) => {
-    const totalSeconds = Math.floor(millis / 1000);
-    const minutes = Math.floor(totalSeconds / 60);
-    const seconds = totalSeconds % 60;
-    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
-  };
 
   const handleSliderChange = (value: number) => {
     setSliderValue(value);
