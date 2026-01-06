@@ -219,6 +219,7 @@ export default function NowPlayingScreen() {
           <TouchableOpacity
             style={styles.controlButton}
             onPress={toggleShuffle}
+            accessibilityLabel={shuffleMode ? 'Disable Shuffle' : 'Enable Shuffle'}
           >
             <Ionicons
               name="shuffle"
@@ -230,6 +231,7 @@ export default function NowPlayingScreen() {
           <TouchableOpacity
             style={styles.controlButton}
             onPress={previousTrack}
+            accessibilityLabel="Previous Track"
           >
             <Ionicons name="play-skip-back" size={32} color="#FFFFFF" />
           </TouchableOpacity>
@@ -237,6 +239,7 @@ export default function NowPlayingScreen() {
           <TouchableOpacity
             style={styles.playButton}
             onPress={isPlaying ? pauseTrack : resumeTrack}
+            accessibilityLabel={isPlaying ? 'Pause' : 'Play'}
           >
             <Ionicons
               name={isPlaying ? 'pause' : 'play'}
@@ -248,6 +251,7 @@ export default function NowPlayingScreen() {
           <TouchableOpacity
             style={styles.controlButton}
             onPress={nextTrack}
+            accessibilityLabel="Next Track"
           >
             <Ionicons name="play-skip-forward" size={32} color="#FFFFFF" />
           </TouchableOpacity>
@@ -255,6 +259,7 @@ export default function NowPlayingScreen() {
           <TouchableOpacity
             style={styles.controlButton}
             onPress={cycleRepeatMode}
+            accessibilityLabel="Cycle Repeat Mode"
           >
             <Ionicons
               name={getRepeatIcon()}
