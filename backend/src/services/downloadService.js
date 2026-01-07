@@ -1,4 +1,4 @@
-const { exec } = require('child_process');
+const { spawn } = require('child_process');
 const fs = require('fs').promises;
 const path = require('path');
 const crypto = require('crypto');
@@ -41,11 +41,11 @@ class DownloadService {
     this.activeDownloads.set(downloadId, downloadInfo);
 
     const ytdlpArgs = [
-      `"https://youtube.com/watch?v=${videoId}"`,
+      `https://youtube.com/watch?v=${videoId}`,
       '-x',
       '--audio-format', options.format || 'mp3',
       '--audio-quality', options.quality || '0',
-      '--output', `"${outputPath}"`,
+      '--output', outputPath,
       '--no-playlist',
       '--embed-thumbnail',
       '--embed-metadata',
@@ -56,10 +56,8 @@ class DownloadService {
       ytdlpArgs.push('--extract-audio');
     }
 
-    const command = `${this.ytdlpPath} ${ytdlpArgs.join(' ')}`;
-
     return new Promise((resolve, reject) => {
-      const process = exec(command, { maxBuffer: 1024 * 1024 * 10 });
+      const process = spawn(this.ytdlpPath, ytdlpArgs, { maxBuffer: 1024 * 1024 * 10 });
 
       let errorOutput = '';
 
@@ -127,10 +125,10 @@ class DownloadService {
     this.activeDownloads.set(downloadId, downloadInfo);
 
     // First, get playlist info
-    const infoCommand = `${this.ytdlpPath} --flat-playlist --dump-json "https://youtube.com/playlist?list=${playlistId}"`;
+    const infoArgs = ['--flat-playlist', '--dump-json', `https://youtube.com/playlist?list=${playlistId}`];
     
     try {
-      const trackIds = await this.getPlaylistTracks(infoCommand);
+      const trackIds = await this.getPlaylistTracks(infoArgs);
       downloadInfo.totalTracks = trackIds.length;
       downloadInfo.tracks = trackIds.map(id => ({ id, status: 'pending' }));
 
@@ -177,33 +175,48 @@ class DownloadService {
     }
   }
 
-  getPlaylistTracks(command) {
+  getPlaylistTracks(args) {
     return new Promise((resolve, reject) => {
-      exec(command, { maxBuffer: 1024 * 1024 * 10 }, (error, stdout, stderr) => {
-        if (error) {
-          reject(error);
-          return;
-        }
+      const process = spawn(this.ytdlpPath, args, { maxBuffer: 1024 * 1024 * 10 });
+      let stdout = '';
+      let stderr = '';
 
-        try {
-          const tracks = stdout
-            .trim()
-            .split('\n')
-            .filter(line => line.trim())
-            .map(line => {
-              try {
-                const data = JSON.parse(line);
-                return data.id || data.url?.split('v=')[1]?.split('&')[0];
-              } catch {
-                return null;
-              }
-            })
-            .filter(id => id);
-          
-          resolve(tracks);
-        } catch (error) {
-          reject(error);
+      process.stdout.on('data', (data) => {
+        stdout += data.toString();
+      });
+
+      process.stderr.on('data', (data) => {
+        stderr += data.toString();
+      });
+
+      process.on('close', (code) => {
+        if (code === 0) {
+          try {
+            const tracks = stdout
+              .trim()
+              .split('\n')
+              .filter(line => line.trim())
+              .map(line => {
+                try {
+                  const data = JSON.parse(line);
+                  return data.id || data.url?.split('v=')[1]?.split('&')[0];
+                } catch {
+                  return null;
+                }
+              })
+              .filter(id => id);
+
+            resolve(tracks);
+          } catch (error) {
+            reject(error);
+          }
+        } else {
+          reject(new Error(stderr));
         }
+      });
+
+      process.on('error', (err) => {
+        reject(err);
       });
     });
   }
