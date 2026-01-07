@@ -51,6 +51,7 @@ export default function MiniPlayer() {
               isPlaying ? pauseTrack() : resumeTrack();
             }}
             style={styles.controlButton}
+            accessibilityLabel={isPlaying ? 'Pause' : 'Play'}
           >
             <Ionicons
               name={isPlaying ? 'pause' : 'play'}
@@ -64,6 +65,7 @@ export default function MiniPlayer() {
               nextTrack();
             }}
             style={styles.controlButton}
+            accessibilityLabel="Next track"
           >
             <Ionicons name="play-skip-forward" size={24} color="#FFFFFF" />
           </TouchableOpacity>
