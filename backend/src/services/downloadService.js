@@ -1,4 +1,4 @@
-const { exec } = require('child_process');
+const { spawn } = require('child_process');
 const fs = require('fs').promises;
 const path = require('path');
 const crypto = require('crypto');
@@ -56,31 +56,31 @@ class DownloadService {
       ytdlpArgs.push('--extract-audio');
     }
 
-    const command = `${this.ytdlpPath} ${ytdlpArgs.join(' ')}`;
+    const command = this.ytdlpPath;
+    const args = ytdlpArgs.filter(arg => arg !== '').map(arg => arg.replace(/"/g, ''));
 
     return new Promise((resolve, reject) => {
-      const process = exec(command, { maxBuffer: 1024 * 1024 * 10 });
+      const process = spawn(command, args);
 
-      let errorOutput = '';
+      let stdout = '';
+      let stderr = '';
 
       process.stdout.on('data', (data) => {
-        const output = data.toString();
+        stdout += data.toString();
         
-        // Parse progress
-        const progressMatch = output.match(/(\d+\.?\d*)%/);
+        const progressMatch = stdout.match(/(\d+\.?\d*)%/);
         if (progressMatch) {
           downloadInfo.progress = parseFloat(progressMatch[1]);
         }
 
-        // Parse destination file
-        const destMatch = output.match(/Destination: (.+)/);
+        const destMatch = stdout.match(/Destination: (.+)/);
         if (destMatch) {
           downloadInfo.outputPath = destMatch[1].trim();
         }
       });
 
       process.stderr.on('data', (data) => {
-        errorOutput += data.toString();
+        stderr += data.toString();
       });
 
       process.on('close', (code) => {
@@ -91,9 +91,9 @@ class DownloadService {
           resolve(downloadInfo);
         } else {
           downloadInfo.status = 'failed';
-          downloadInfo.error = errorOutput;
+          downloadInfo.error = stderr;
           this.activeDownloads.delete(downloadId);
-          reject(new Error(`Download failed: ${errorOutput}`));
+          reject(new Error(`Download failed: ${stderr}`));
         }
       });
 
@@ -127,10 +127,8 @@ class DownloadService {
     this.activeDownloads.set(downloadId, downloadInfo);
 
     // First, get playlist info
-    const infoCommand = `${this.ytdlpPath} --flat-playlist --dump-json "https://youtube.com/playlist?list=${playlistId}"`;
-    
     try {
-      const trackIds = await this.getPlaylistTracks(infoCommand);
+      const trackIds = await this.getPlaylistTracks(playlistId);
       downloadInfo.totalTracks = trackIds.length;
       downloadInfo.tracks = trackIds.map(id => ({ id, status: 'pending' }));
 
@@ -177,33 +175,52 @@ class DownloadService {
     }
   }
 
-  getPlaylistTracks(command) {
-    return new Promise((resolve, reject) => {
-      exec(command, { maxBuffer: 1024 * 1024 * 10 }, (error, stdout, stderr) => {
-        if (error) {
-          reject(error);
-          return;
-        }
+  getPlaylistTracks(playlistId) {
+    const command = this.ytdlpPath;
+    const args = ['--flat-playlist', '--dump-json', `https://youtube.com/playlist?list=${playlistId}`];
 
-        try {
-          const tracks = stdout
-            .trim()
-            .split('\n')
-            .filter(line => line.trim())
-            .map(line => {
-              try {
-                const data = JSON.parse(line);
-                return data.id || data.url?.split('v=')[1]?.split('&')[0];
-              } catch {
-                return null;
-              }
-            })
-            .filter(id => id);
-          
-          resolve(tracks);
-        } catch (error) {
-          reject(error);
+    return new Promise((resolve, reject) => {
+      const process = spawn(command, args);
+
+      let stdout = '';
+      let stderr = '';
+
+      process.stdout.on('data', (data) => {
+        stdout += data.toString();
+      });
+
+      process.stderr.on('data', (data) => {
+        stderr += data.toString();
+      });
+
+      process.on('close', (code) => {
+        if (code === 0) {
+          try {
+            const tracks = stdout
+              .trim()
+              .split('\n')
+              .filter(line => line.trim())
+              .map(line => {
+                try {
+                  const data = JSON.parse(line);
+                  return data.id || data.url?.split('v=')[1]?.split('&')[0];
+                } catch {
+                  return null;
+                }
+              })
+              .filter(id => id);
+
+            resolve(tracks);
+          } catch (error) {
+            reject(error);
+          }
+        } else {
+          reject(new Error(`Failed to get playlist tracks: ${stderr}`));
         }
+      });
+
+      process.on('error', (err) => {
+        reject(err);
       });
     });
   }
