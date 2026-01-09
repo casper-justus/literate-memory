@@ -41,6 +41,7 @@ export default function ProfileScreen({ navigation }: Props) {
   const [email, setEmail] = useState(profile.email);
   const [bio, setBio] = useState(profile.bio);
   const [emailError, setEmailError] = useState('');
+  const [isSaving, setIsSaving] = useState(false);
 
   const handleSave = async () => {
     if (!username.trim()) {
@@ -54,13 +55,19 @@ export default function ProfileScreen({ navigation }: Props) {
     }
 
     setEmailError('');
-    await setProfile({
-      username: username.trim(),
-      email: email.trim(),
-      bio: bio.trim(),
-    });
-
-    Alert.alert('Success', 'Profile updated successfully!');
+    setIsSaving(true);
+    try {
+      await setProfile({
+        username: username.trim(),
+        email: email.trim(),
+        bio: bio.trim(),
+      });
+      Alert.alert('Success', 'Profile updated successfully!');
+    } catch (error) {
+      Alert.alert('Error', 'Failed to save profile. Please try again.');
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const handleReset = () => {
@@ -136,6 +143,7 @@ export default function ProfileScreen({ navigation }: Props) {
         <Button
           title="Save Profile"
           onPress={handleSave}
+          loading={isSaving}
         />
 
         <Button
