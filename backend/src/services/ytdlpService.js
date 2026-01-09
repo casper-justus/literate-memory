@@ -1,9 +1,6 @@
-const { exec } = require('child_process');
-const { promisify } = require('util');
+const { spawn } = require('child_process');
 const path = require('path');
 const fs = require('fs').promises;
-
-const execAsync = promisify(exec);
 
 class YtDlpService {
   constructor() {
@@ -20,10 +17,38 @@ class YtDlpService {
     }
   }
 
+  async execFile(args) {
+    return new Promise((resolve, reject) => {
+      const process = spawn(this.ytdlpPath, args);
+      let stdout = '';
+      let stderr = '';
+
+      process.stdout.on('data', (data) => {
+        stdout += data.toString();
+      });
+
+      process.stderr.on('data', (data) => {
+        stderr += data.toString();
+      });
+
+      process.on('close', (code) => {
+        if (code === 0) {
+          resolve({ stdout, stderr });
+        } else {
+          reject(new Error(`yt-dlp exited with code ${code}: ${stderr}`));
+        }
+      });
+
+      process.on('error', (error) => {
+        reject(error);
+      });
+    });
+  }
+
   async search(query, limit = 20) {
     try {
-      const command = `${this.ytdlpPath} "ytsearch${limit}:${query}" --dump-json --skip-download`;
-      const { stdout } = await execAsync(command, { maxBuffer: 10 * 1024 * 1024 });
+      const args = [`ytsearch${limit}:${query}`, '--dump-json', '--skip-download'];
+      const { stdout } = await this.execFile(args);
       
       const results = stdout.trim().split('\n').filter(line => line).map(line => {
         try {
@@ -52,8 +77,8 @@ class YtDlpService {
 
   async getVideoInfo(videoId) {
     try {
-      const command = `${this.ytdlpPath} "https://www.youtube.com/watch?v=${videoId}" --dump-json --skip-download`;
-      const { stdout } = await execAsync(command, { maxBuffer: 10 * 1024 * 1024 });
+      const args = [`https://www.youtube.com/watch?v=${videoId}`, '--dump-json', '--skip-download'];
+      const { stdout } = await this.execFile(args);
       
       const data = JSON.parse(stdout);
       return {
@@ -75,8 +100,8 @@ class YtDlpService {
 
   async getAudioUrl(videoId) {
     try {
-      const command = `${this.ytdlpPath} "https://www.youtube.com/watch?v=${videoId}" -f "bestaudio" --get-url`;
-      const { stdout } = await execAsync(command, { maxBuffer: 1024 * 1024 });
+      const args = [`https://www.youtube.com/watch?v=${videoId}`, '-f', 'bestaudio', '--get-url'];
+      const { stdout } = await this.execFile(args);
       
       const url = stdout.trim();
       return url;
@@ -88,8 +113,8 @@ class YtDlpService {
 
   async getAudioFormats(videoId) {
     try {
-      const command = `${this.ytdlpPath} "https://www.youtube.com/watch?v=${videoId}" -F --dump-json --skip-download`;
-      const { stdout } = await execAsync(command, { maxBuffer: 5 * 1024 * 1024 });
+      const args = [`https://www.youtube.com/watch?v=${videoId}`, '-F', '--dump-json', '--skip-download'];
+      const { stdout } = await this.execFile(args);
       
       const data = JSON.parse(stdout);
       const audioFormats = data.formats.filter(f => 
@@ -113,8 +138,8 @@ class YtDlpService {
 
   async downloadAudio(videoId, outputPath) {
     try {
-      const command = `${this.ytdlpPath} "https://www.youtube.com/watch?v=${videoId}" -f "bestaudio" -o "${outputPath}" --extract-audio --audio-format mp3`;
-      await execAsync(command, { maxBuffer: 50 * 1024 * 1024 });
+      const args = [`https://www.youtube.com/watch?v=${videoId}`, '-f', 'bestaudio', '-o', outputPath, '--extract-audio', '--audio-format', 'mp3'];
+      await this.execFile(args);
       
       return outputPath;
     } catch (error) {
@@ -125,8 +150,8 @@ class YtDlpService {
 
   async getTrending(region = 'US') {
     try {
-      const command = `${this.ytdlpPath} "https://www.youtube.com/feed/trending" --dump-json --skip-download --playlist-items 1-20`;
-      const { stdout } = await execAsync(command, { maxBuffer: 10 * 1024 * 1024 });
+      const args = ['https://www.youtube.com/feed/trending', '--dump-json', '--skip-download', '--playlist-items', '1-20'];
+      const { stdout } = await this.execFile(args);
 
       const results = stdout
         .trim()
@@ -160,8 +185,8 @@ class YtDlpService {
 
   async getPlaylist(playlistId) {
     try {
-      const command = `${this.ytdlpPath} "https://www.youtube.com/playlist?list=${playlistId}" --dump-single-json --flat-playlist --skip-download`;
-      const { stdout } = await execAsync(command, { maxBuffer: 20 * 1024 * 1024 });
+      const args = [`https://www.youtube.com/playlist?list=${playlistId}`, '--dump-single-json', '--flat-playlist', '--skip-download'];
+      const { stdout } = await this.execFile(args);
 
       const data = JSON.parse(stdout);
 
@@ -206,7 +231,7 @@ class YtDlpService {
 
   async checkYtDlp() {
     try {
-      const { stdout } = await execAsync(`${this.ytdlpPath} --version`);
+      const { stdout } = await this.execFile(['--version']);
       return { installed: true, version: stdout.trim() };
     } catch (error) {
       return { installed: false, version: null };
