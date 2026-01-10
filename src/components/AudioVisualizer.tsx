@@ -1,7 +1,9 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, Dimensions } from 'react-native';
 import Svg, { Rect, Path, Circle, Line } from 'react-native-svg';
-import AudioVisualizerService, { AudioData } from '../services/AudioVisualizerService';
+import AudioVisualizerService, {
+  AudioData,
+} from '../services/AudioVisualizerService';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -13,7 +15,9 @@ interface AudioVisualizerProps {
   isPlaying?: boolean;
 }
 
-export default function AudioVisualizer({
+// ⚡ Bolt: Using React.memo to prevent re-renders when props haven't changed.
+// This is critical for performance as this component re-renders on every audio frame.
+function AudioVisualizer({
   type = 'bars',
   color = '#007AFF',
   barCount = 32,
@@ -30,7 +34,7 @@ export default function AudioVisualizer({
     if (!isPlaying) return;
 
     AudioVisualizerService.initialize();
-    
+
     const unsubscribe = AudioVisualizerService.subscribe((data) => {
       setAudioData(data);
     });
@@ -74,7 +78,7 @@ export default function AudioVisualizer({
     const stepX = (SCREEN_WIDTH - 40) / points;
 
     let pathData = `M 0 ${height / 2}`;
-    
+
     wave.forEach((value, index) => {
       const x = index * stepX;
       const y = value * height;
@@ -106,7 +110,7 @@ export default function AudioVisualizer({
         {circular.map((value, index) => {
           const angle = (index / segments) * 2 * Math.PI;
           const length = radius + value * radius * 0.5;
-          
+
           const x1 = centerX + Math.cos(angle) * radius;
           const y1 = centerY + Math.sin(angle) * radius;
           const x2 = centerX + Math.cos(angle) * length;
@@ -195,6 +199,8 @@ export default function AudioVisualizer({
     </View>
   );
 }
+
+export default React.memo(AudioVisualizer);
 
 const styles = StyleSheet.create({
   container: {
