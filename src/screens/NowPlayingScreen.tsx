@@ -23,6 +23,15 @@ const { width, height } = Dimensions.get('window');
 
 type NavigationProp = StackNavigationProp<RootStackParamList>;
 
+// Helper function to format time, moved outside the component
+// to prevent re-creation on every render.
+const formatTime = (millis: number) => {
+  const totalSeconds = Math.floor(millis / 1000);
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+  return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+};
+
 export default function NowPlayingScreen() {
   const navigation = useNavigation<NavigationProp>();
 
@@ -52,13 +61,6 @@ export default function NowPlayingScreen() {
       setSliderValue(position);
     }
   }, [position, isSeeking]);
-
-  const formatTime = (millis: number) => {
-    const totalSeconds = Math.floor(millis / 1000);
-    const minutes = Math.floor(totalSeconds / 60);
-    const seconds = totalSeconds % 60;
-    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
-  };
 
   const handleSliderChange = (value: number) => {
     setSliderValue(value);
