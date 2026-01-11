@@ -1,9 +1,9 @@
-const { exec } = require('child_process');
+const { execFile } = require('child_process');
 const { promisify } = require('util');
 const path = require('path');
 const fs = require('fs').promises;
 
-const execAsync = promisify(exec);
+const execFileAsync = promisify(execFile);
 
 class YtDlpService {
   constructor() {
@@ -21,9 +21,12 @@ class YtDlpService {
   }
 
   async search(query, limit = 20) {
+    if (!this.isValidQuery(query)) {
+      throw new Error('Invalid search query');
+    }
     try {
-      const command = `${this.ytdlpPath} "ytsearch${limit}:${query}" --dump-json --skip-download`;
-      const { stdout } = await execAsync(command, { maxBuffer: 10 * 1024 * 1024 });
+      const args = [`ytsearch${limit}:${query}`, '--dump-json', '--skip-download'];
+      const { stdout } = await execFileAsync(this.ytdlpPath, args, { maxBuffer: 10 * 1024 * 1024 });
       
       const results = stdout.trim().split('\n').filter(line => line).map(line => {
         try {
@@ -51,9 +54,12 @@ class YtDlpService {
   }
 
   async getVideoInfo(videoId) {
+    if (!this.isValidVideoId(videoId)) {
+      throw new Error('Invalid video ID');
+    }
     try {
-      const command = `${this.ytdlpPath} "https://www.youtube.com/watch?v=${videoId}" --dump-json --skip-download`;
-      const { stdout } = await execAsync(command, { maxBuffer: 10 * 1024 * 1024 });
+      const args = [`https://www.youtube.com/watch?v=${videoId}`, '--dump-json', '--skip-download'];
+      const { stdout } = await execFileAsync(this.ytdlpPath, args, { maxBuffer: 10 * 1024 * 1024 });
       
       const data = JSON.parse(stdout);
       return {
@@ -74,9 +80,12 @@ class YtDlpService {
   }
 
   async getAudioUrl(videoId) {
+    if (!this.isValidVideoId(videoId)) {
+      throw new Error('Invalid video ID');
+    }
     try {
-      const command = `${this.ytdlpPath} "https://www.youtube.com/watch?v=${videoId}" -f "bestaudio" --get-url`;
-      const { stdout } = await execAsync(command, { maxBuffer: 1024 * 1024 });
+      const args = [`https://www.youtube.com/watch?v=${videoId}`, '-f', 'bestaudio', '--get-url'];
+      const { stdout } = await execFileAsync(this.ytdlpPath, args, { maxBuffer: 1024 * 1024 });
       
       const url = stdout.trim();
       return url;
@@ -87,9 +96,12 @@ class YtDlpService {
   }
 
   async getAudioFormats(videoId) {
+    if (!this.isValidVideoId(videoId)) {
+      throw new Error('Invalid video ID');
+    }
     try {
-      const command = `${this.ytdlpPath} "https://www.youtube.com/watch?v=${videoId}" -F --dump-json --skip-download`;
-      const { stdout } = await execAsync(command, { maxBuffer: 5 * 1024 * 1024 });
+      const args = [`https://www.youtube.com/watch?v=${videoId}`, '-F', '--dump-json', '--skip-download'];
+      const { stdout } = await execFileAsync(this.ytdlpPath, args, { maxBuffer: 5 * 1024 * 1024 });
       
       const data = JSON.parse(stdout);
       const audioFormats = data.formats.filter(f => 
@@ -112,9 +124,18 @@ class YtDlpService {
   }
 
   async downloadAudio(videoId, outputPath) {
+    if (!this.isValidVideoId(videoId)) {
+      throw new Error('Invalid video ID');
+    }
     try {
-      const command = `${this.ytdlpPath} "https://www.youtube.com/watch?v=${videoId}" -f "bestaudio" -o "${outputPath}" --extract-audio --audio-format mp3`;
-      await execAsync(command, { maxBuffer: 50 * 1024 * 1024 });
+      const args = [
+        `https://www.youtube.com/watch?v=${videoId}`,
+        '-f', 'bestaudio',
+        '-o', outputPath,
+        '--extract-audio',
+        '--audio-format', 'mp3'
+      ];
+      await execFileAsync(this.ytdlpPath, args, { maxBuffer: 50 * 1024 * 1024 });
       
       return outputPath;
     } catch (error) {
@@ -125,8 +146,8 @@ class YtDlpService {
 
   async getTrending(region = 'US') {
     try {
-      const command = `${this.ytdlpPath} "https://www.youtube.com/feed/trending" --dump-json --skip-download --playlist-items 1-20`;
-      const { stdout } = await execAsync(command, { maxBuffer: 10 * 1024 * 1024 });
+      const args = ['https://www.youtube.com/feed/trending', '--dump-json', '--skip-download', '--playlist-items', '1-20'];
+      const { stdout } = await execFileAsync(this.ytdlpPath, args, { maxBuffer: 10 * 1024 * 1024 });
 
       const results = stdout
         .trim()
@@ -159,9 +180,12 @@ class YtDlpService {
   }
 
   async getPlaylist(playlistId) {
+    if (!this.isValidPlaylistId(playlistId)) {
+      throw new Error('Invalid playlist ID');
+    }
     try {
-      const command = `${this.ytdlpPath} "https://www.youtube.com/playlist?list=${playlistId}" --dump-single-json --flat-playlist --skip-download`;
-      const { stdout } = await execAsync(command, { maxBuffer: 20 * 1024 * 1024 });
+      const args = [`https://www.youtube.com/playlist?list=${playlistId}`, '--dump-single-json', '--flat-playlist', '--skip-download'];
+      const { stdout } = await execFileAsync(this.ytdlpPath, args, { maxBuffer: 20 * 1024 * 1024 });
 
       const data = JSON.parse(stdout);
 
@@ -206,11 +230,24 @@ class YtDlpService {
 
   async checkYtDlp() {
     try {
-      const { stdout } = await execAsync(`${this.ytdlpPath} --version`);
+      const { stdout } = await execFileAsync(this.ytdlpPath, ['--version']);
       return { installed: true, version: stdout.trim() };
     } catch (error) {
       return { installed: false, version: null };
     }
+  }
+
+  isValidVideoId(videoId) {
+    return /^[a-zA-Z0-9_-]{11}$/.test(videoId);
+  }
+
+  isValidPlaylistId(playlistId) {
+    return /^[a-zA-Z0-9_-]+$/.test(playlistId);
+  }
+
+  isValidQuery(query) {
+    // Basic validation: disallow shell characters.
+    return !/[;&|`$()]/.test(query);
   }
 }
 
